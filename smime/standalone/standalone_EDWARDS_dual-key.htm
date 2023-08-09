@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>EDWARDS dual-key</title>
+		<style>
+			body {margin:0 auto;max-width:50em;background-color:white;color:black}
+			main {padding:0 1ex 1em}
+			table {width:100%;border-collapse:collapse}
+			table,th,td {border:.1ex solid black}
+			th,td {padding:.25ex 1ex}
+		</style>
+	</head>
+<body>
+	<main>
+
+		<h1>standalone Self-Signed S/MIME Certificate</h1>
+		<hr>
+		<h2>EDWARDS dual-key certificate [C + S + E]</h2>
+		<hr>
+
+		<h3>0. primary key, Certify [C]</h3>
+		<h4>X.509: ROOT/Issuer</h4>
+		<table>
+			<tr><th>Field/Extension</th><th></th><th>Content</th><th>Optional/Critical</th></tr>
+			<tr><td>Version</td><td>Version: 3 (0x2)</td><td></td><td></td></tr>
+			<tr><td>Serial Number</td><td>containing at least 64 bits of output from a CSPRNG, e.g.</td><td>0x402ad043d9884e67</td><td></td></tr>
+			<tr><td>Signature Algorithm</td><td></td><td>ED448</td><td></td></tr>
+			<tr><td rowspan="2">Validity</td><td>Not Before</td><td>...</td><td></td></tr>
+			<tr><td>Not After</td><td>...</td><td></td></tr>
+			<tr><td rowspan="15">Issuer DN = <b>Subject DN</b></td><td><b>commonName</b></td><td><b>...</b></td><td></td></tr>
+			<tr><td><i>givenName</i></td><td></td><td></td></tr>
+			<tr><td><i>surname</i></td><td></td><td></td></tr>
+			<tr><td><i>pseudonym</i></td><td></td><td></td></tr>
+			<tr><td><i>serialNumber</i></td><td></td><td></td></tr>
+			<tr><td><i><del>emailAddress</del></i></td><td></td><td></td></tr>
+			<tr><td><i>title</i></td><td></td><td></td></tr>
+			<tr><td><i>streetAddress</i></td><td></td><td></td></tr>
+			<tr><td><i>localityName</i></td><td></td><td></td></tr>
+			<tr><td><i>stateOrProvinceName</i></td><td></td><td></td></tr>
+			<tr><td><i>postalCode</i></td><td></td><td></td></tr>
+			<tr><td><i>countryName</i></td><td></td><td></td></tr>
+			<tr><td><i>organizationName</i></td><td></td><td></td></tr>
+			<tr><td><i>organizationalUnitName</i></td><td></td><td></td></tr>
+			<tr><td><i>organizationIdentifier</i></td><td></td><td></td></tr>
+			<tr><td>Subject Public Key Info</td><td>Public Key Algorithm and EdDSA Public-Key</td><td>ED448 and ED448</td><td></td></tr>
+			<tr><td rowspan="4">X509v3 extensions</td><td>Basic Constraints</td><td>CA:TRUE</td><td>critical</td></tr>
+			<tr><td>Key Usage</td><td>keyCertSign, cRLSign</td><td>critical</td></tr>
+			<tr><td>Extended Key Usage</td><td>clientAuth, emailProtection</td><td></td></tr>
+			<tr><td>Subject Key Identifier</td><td>256-bit SHAKE-256 hash of the DER encoding of the subjectPublicKey (pin-shake256-hex)</td><td></td></tr>
+		</table>
+
+		<h3>1. subkey, Sign [S]</h3>
+		<h4>X.509: Subscriber/Subject</h4>
+		<table>
+			<tr><th>Field/Extension</th><th></th><th>Content</th><th>Optional/Critical</th></tr>
+			<tr><td>Version</td><td>Version: 3 (0x2)</td><td></td><td></td></tr>
+			<tr><td>Serial Number</td><td>containing at least 64 bits of output from a CSPRNG, e.g.</td><td>0x734ca918d07e03c8</td><td></td></tr>
+			<tr><td>Signature Algorithm</td><td></td><td>ED448</td><td></td></tr>
+			<tr><td>Issuer</td><td>based on the Distinguished Name (Subject) in the issuer's certificate</td><td><b>...</b></td><td></td></tr>
+			<tr><td rowspan="2">Validity</td><td>Not Before</td><td>...</td><td></td></tr>
+			<tr><td>Not After</td><td>...</td><td></td></tr>
+			<tr><td><b>Subject DN</b></td><td>NULL SEQUENCE (NULL-DN)</td><td>SEQUENCE {}</td><td></td></tr>
+			<tr><td>Subject Public Key Info</td><td>Public Key Algorithm and EdDSA Public-Key</td><td>ED25519 and ED25519</td><td></td></tr>
+			<tr><td rowspan="6">X509v3 extensions</td><td>Basic Constraints</td><td>CA:FALSE</td><td>critical</td></tr>
+			<tr><td>Key Usage</td><td>digitalSignature</td><td>critical</td></tr>
+			<tr><td>Extended Key Usage</td><td>clientAuth, emailProtection</td><td></td></tr>
+			<tr><td>Authority Key Identifier</td><td>keyID: based on the subject key identifier in the issuer's certificate</td><td></td></tr>
+			<tr><td>Subject Key Identifier</td><td>256-bit SHAKE-256 hash of the DER encoding of the subjectPublicKey (pin-shake256-hex)</td><td></td></tr>
+			<tr><td>Subject Alternative Name</td><td>IA5String (rfc822Name) or/and UTF-8 (otherName)<br><b>test@example.com</b></td><td>critical</td></tr>
+		</table>
+
+		<h3>2. subkey, Encrypt [E]</h3>
+		<h4>X.509: Subscriber/Subject</h4>
+		<table>
+			<tr><th>Field/Extension</th><th></th><th>Content</th><th>Optional/Critical</th></tr>
+			<tr><td>Version</td><td>Version: 3 (0x2)</td><td></td><td></td></tr>
+			<tr><td>Serial Number</td><td>containing at least 64 bits of output from a CSPRNG, e.g.</td><td>0x1b3e0eb4b68f79ff</td><td></td></tr>
+			<tr><td>Signature Algorithm</td><td></td><td>ED448</td><td></td></tr>
+			<tr><td>Issuer</td><td>based on the Distinguished Name (Subject) in the issuer's certificate</td><td><b>...</b></td><td></td></tr>
+			<tr><td rowspan="2">Validity</td><td>Not Before</td><td>...</td><td></td></tr>
+			<tr><td>Not After</td><td>...</td><td></td></tr>
+			<tr><td><b>Subject DN</b></td><td>NULL SEQUENCE (NULL-DN)</td><td>SEQUENCE {}</td><td></td></tr>
+			<tr><td>Subject Public Key Info</td><td>Public Key Algorithm and ECDH Public-Key</td><td>X25519 and X25519</td><td></td></tr>
+			<tr><td rowspan="6">X509v3 extensions</td><td>Basic Constraints</td><td>CA:FALSE</td><td>critical</td></tr>
+			<tr><td>Key Usage</td><td>keyAgreement</td><td>critical</td></tr>
+			<tr><td>Extended Key Usage</td><td>emailProtection</td><td></td></tr>
+			<tr><td>Authority Key Identifier</td><td>keyID: based on the subject key identifier in the issuer's certificate</td><td></td></tr>
+			<tr><td>Subject Key Identifier</td><td>256-bit SHAKE-256 hash of the DER encoding of the subjectPublicKey (pin-shake256-hex)</td><td></td></tr>
+			<tr><td>Subject Alternative Name</td><td>IA5String (rfc822Name) or/and UTF-8 (otherName)<br><b>test@example.com</b></td><td>critical</td></tr>
+		</table>
+
+	</main>
+</body>
+</html>
