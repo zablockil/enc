@@ -56,6 +56,7 @@ https://crt.sh/lintcert
 https://crypto.stackexchange.com/questions/19452/static-dh-static-ecdh-certificate-using-openssl
 https://crypto.stackexchange.com/questions/27866/why-curve25519-for-encryption-but-ed25519-for-signatures
 https://crypto.stackexchange.com/questions/97945/openssl-cms-enveloped-datas-public-key-certificates-public-key-are-they-sam
+https://csrc.nist.gov/Projects/pki-testing/Sample-Certificates-and-CRLs
 https://cups.cs.cmu.edu/soups/2005/2005proceedings/p13-garfinkel.pdf
 https://datatracker.ietf.org/doc/draft-ietf-smime-sender-auth/
 https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.3
@@ -63,6 +64,7 @@ https://dev.gnupg.org/T1644
 https://docs.oracle.com/cd/E19226-01/820-7627/bncbs/index.html
 https://dvuckovic.com/2020/12/22/setup-smime-encryption-gmail/
 https://eprint.iacr.org/2019/130.pdf
+https://fm4dd.com/openssl/certexamples.shtm
 https://gist.github.com/briansmith/2ee42439923d8e65a266994d0f70180b
 https://gist.github.com/grugq/03167bed45e774551155
 https://gist.github.com/rmoriz/5945400
@@ -82,6 +84,7 @@ https://github.com/jymigeon/gpgsm-as-ca
 https://github.com/kaikramer/keystore-explorer
 https://github.com/Keyfactor/ejbca-ce
 https://github.com/khale/encryption-wrappers
+https://github.com/openssl/openssl/blob/master/test/smime-certs/mksmime-certs.sh
 https://github.com/openssl/openssl/tree/master/test/certs
 https://github.com/OpenVPN/easy-rsa
 https://github.com/viralpoetry/awesome-pki
@@ -96,6 +99,8 @@ https://morgansimonsen.wordpress.com/2013/04/16/understanding-x-509-digital-cert
 https://mta.openssl.org/pipermail/openssl-dev/2016-February/005099.html
 https://mta.openssl.org/pipermail/openssl-users/2017-May/005846.html
 https://mta.openssl.org/pipermail/openssl-users/2021-March/013552.html
+https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-32.pdf
+https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-49.pdf
 https://roll.urown.net/ca/ca_root_setup.html
 https://roll.urown.net/desktop/secrets/certificates.html
 https://security.stackexchange.com/questions/133221/how-to-properly-create-and-use-cross-signed-cas-and-certificates
@@ -103,6 +108,7 @@ https://security.stackexchange.com/questions/27797/what-damage-could-be-done-if-
 https://security.stackexchange.com/questions/44251/openssl-generate-different-types-of-self-signed-certificate/82868#82868
 https://security.stackexchange.com/questions/62106/how-to-get-policy-x509v3-any-policy-in-a-certificate-generated-with-openssl
 https://security.stackexchange.com/questions/90254/can-a-rootca-be-revoked/90257#90257
+https://serverfault.com/questions/219818/creating-a-dsa-signature-from-the-linux-command-line
 https://sleeplessbeastie.eu/2019/09/09/how-to-match-certificate-and-its-intermediate-counterpart/
 https://smallstep.com/blog/everything-pki/
 https://social.technet.microsoft.com/wiki/contents/articles/3147.pki-certificate-chaining-engine-cce.aspx
@@ -110,6 +116,7 @@ https://stackoverflow.com/questions/1167746/how-to-assign-a-heredoc-value-to-a-v
 https://stackoverflow.com/questions/32392891/determien-leading-zeros-in-serialnumber/32393733#32393733
 https://stackoverflow.com/questions/3468127/x509-whats-the-difference-between-digital-signature-and-non-repudiation
 https://stackoverflow.com/questions/41950056/openssl1-1-0-b-is-not-support-secp256r1openssl-ecparam-list-curves/41953717#41953717
+https://stackoverflow.com/questions/59425854/is-there-a-way-to-generate-a-dsa-certificate-using-pure-net-framework-and-if-no/59429891#59429891
 https://stackoverflow.com/questions/67395119/specify-octetstring-as-hex-with-custom-asn1-object-in-openssl-config-file
 https://stackoverflow.com/questions/71275236/how-to-get-generate-pin-sha256-from-certificate/72159287#72159287
 https://stackoverflow.com/questions/74818101/subjectaltname-with-othername-and-bitstring-as-hex
@@ -134,8 +141,8 @@ https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/
 https://www.cs.auckland.ac.nz/~pgut001/dumpasn1.cfg
 https://www.digicert.com/blog/creating-a-dedicated-eku-for-document-signing
 https://www.digicert.com/content/dam/digicert/pdfs/ssl-tls-best-practice-workshop-student-guide-en.pdf
-https://www.digicert.com/content/dam/digicert/pdfs/ssl-tls-best-practice-workshop-student-guide-en.pdf
 https://www.globalsign.com/en/resources/white-paper-smime-compatibility.pdf
+https://www.gnupg.org/faq/gnupg-faq.html
 https://www.golinuxcloud.com/revoke-certificate-generate-crl-openssl/
 https://www.gradenegger.eu/?p=950
 https://www.hindawi.com/journals/scn/2019/6013846/
