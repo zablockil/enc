@@ -43,9 +43,9 @@ The script was based on the findings of the *CA/Browser Forum* and [document](ht
 * [Internet X.509 Public Key Infrastructure Certificate and CRL Profile](https://datatracker.ietf.org/doc/html/rfc5280)
 * [S/MIME Example Keys and Certificates](https://datatracker.ietf.org/doc/html/rfc9216)
 * [Guide for building an ECC pki](https://datatracker.ietf.org/doc/html/draft-moskowitz-ecdsa-pki-10)
-* [Guide for building an EDDSA pki](https://datatracker.ietf.org/doc/html/draft-moskowitz-eddsa-pki-04)
+* [Guide for building an EDDSA pki](https://datatracker.ietf.org/doc/html/draft-moskowitz-eddsa-pki-06)
 * [S/MIME Version 4.0 Certificate Handling](https://datatracker.ietf.org/doc/html/rfc8550)
-* [Guidance on End-to-End E-mail Security](https://datatracker.ietf.org/doc/html/draft-ietf-lamps-e2e-mail-guidance-06)
+* [Guidance on End-to-End E-mail Security](https://datatracker.ietf.org/doc/html/draft-ietf-lamps-e2e-mail-guidance-11)
 * [Limited Additional Mechanisms for PKIX and SMIME (lamps)](https://datatracker.ietf.org/wg/lamps/documents/)
 * [Opportunistic Security: Some Protection Most of the Time](https://datatracker.ietf.org/doc/html/rfc7435)
 
@@ -87,6 +87,10 @@ The script was based on the findings of the *CA/Browser Forum* and [document](ht
 * OpenSSL 3.0.7  1 Nov 2022 / GNU bash 5.2 / date (GNU coreutils) 9.1 / GNU Awk 5.1.0
 
 [guiDumpASN-ng binary for Windows](https://web.archive.org/web/20160828215604/http://geminisecurity.com/wp-content/uploads/tools/GDA-ng-setup.exe)
+
+> The majority of these certificates (64%) were created by devices or deployments where certificates are not verified, usually self-signed certificates, where X.509 is used as a data format to transfer for public keys.
+
+https://eprint.iacr.org/2019/130.pdf
 
 ### Author
 
