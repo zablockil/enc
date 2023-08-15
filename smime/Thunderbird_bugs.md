@@ -13,3 +13,4 @@ The scripts were used to test the functionality of this email program.
 * [RSAES-OAEP tests](https://bugzilla.mozilla.org/show_bug.cgi?id=1826086#c2)
 * [S/MIME aes-GCM](https://bugzilla.mozilla.org/show_bug.cgi?id=1835697)
 * [NIST ECDH keyAgreement tests](https://bugzilla.mozilla.org/show_bug.cgi?id=1836849)
+* [SMIME stress-tests DSA+DH, RSA, NIST EC](https://bugzilla.mozilla.org/show_bug.cgi?id=1847703#c8)
