@@ -69,9 +69,9 @@ The script was based on the findings of the *CA/Browser Forum* and [document](ht
 | RSA Key Size | 3072, 4096 | 2048, 3072, 4096 |
 | NIST ECC | P-384, P-521 | P-256, P-384, P-521 |
 
-| Certificate Type | 1) ROOT Certificate | 2) Subscriber Certificate |
+| Certificate Type | 1) ROOT Certificate | 2) Subscriber Certificate | 3) Subscriber Certificate |
 | --- | --- | --- |
-| Edwards-curve | ED25519, ED448 | ED25519, ED448 ; X25519, X448 |
+| Edwards-curve | ED25519, ED448 | ED25519, ED448 | X25519, X448 |
 
 ### How to install certificates
 
