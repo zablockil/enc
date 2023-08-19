@@ -17,8 +17,8 @@ The script was based on the findings of the *CA/Browser Forum* and [document](ht
 
 1. download a [liveCD Linux](https://distrowatch.com/search.php?category=Data+Rescue) distribution.
 2. copy script to the ramdisk `/tmp/` directory
-3. edit script
-4. `cd /tmp/smime/`
+3. `cd /tmp/smime/`
+4. edit script
 5. run: `./standalone_RSA_single-key.sh`
 
 * ready-to-use certificates will be in: `private/user/credential_private_encrypted.p12`
