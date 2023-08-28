@@ -92,6 +92,7 @@ https://github.com/xperseguers/ocsp-responder/blob/master/Documentation/Certific
 https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/-Q70B0Vf6dA/m/xfWIfd16BQAJ
 https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9946996
 https://is.muni.cz/th/dw52o/Greguskova-DP.pdf
+https://knowledge.digicert.com/alerts/new-industry-requirements-for-public-secure-email-smime-certificates.html
 https://kubernetes.io/docs/tasks/administer-cluster/certificates/
 https://learn.microsoft.com/en-us/previous-versions/tn-archive/aa995740(v=exchg.65)
 https://lwn.net/Articles/851981/
@@ -141,6 +142,8 @@ https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/
 https://www.cs.auckland.ac.nz/~pgut001/dumpasn1.cfg
 https://www.digicert.com/blog/creating-a-dedicated-eku-for-document-signing
 https://www.digicert.com/content/dam/digicert/pdfs/ssl-tls-best-practice-workshop-student-guide-en.pdf
+https://www.digicert.com/kb/csr-creation.htm
+https://www.digicert.com/kb/util/csr-creation-microsoft-servers-using-digicert-utility.htm
 https://www.globalsign.com/en/resources/white-paper-smime-compatibility.pdf
 https://www.gnupg.org/faq/gnupg-faq.html
 https://www.golinuxcloud.com/revoke-certificate-generate-crl-openssl/
