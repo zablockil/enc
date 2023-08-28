@@ -5,7 +5,7 @@
 #
 # RSA / NIST (ECDSA/ECDH) / EDWARDS (Ed25519/Ed448 and X25519/X448)
 #
-# The script runs in two passes:
+# The script runs in two (2) passes:
 #  1) creates an empty .crl file
 #  2) adds an entry to the created .crl file with revocation of specified key
 # If you are revoking a second certificate or a third certificate, etc.,
@@ -26,6 +26,10 @@
 # https://www.openssl.org/docs/man1.1.1/man1/openssl-ca.html
 # https://www.openssl.org/docs/man1.1.1/man1/openssl-crl.html
 # https://github.com/openssl/openssl/blob/master/apps/openssl.cnf
+# https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
+#
+# https://github.com/cabforum/smime/blob/main/SBR.md#72-crl-profile
+# https://datatracker.ietf.org/doc/html/rfc5280#section-5
 #
 ##########
 
@@ -52,7 +56,13 @@ ca_serial_number=$(openssl x509 -noout -serial -in $ca_directory/cert_root.crt |
 ##########
 
 touch "$ca_directory/crl_index.txt"
-echo "00" > "$ca_directory/crl_number.txt"
+echo "010000" > "$ca_directory/crl_number.txt"
+# hex "010000"
+# hex  010000→7FFFFF   max 8323072   (decimal 65536→8388607)
+# hex "0100"
+# hex  0100→7FFF       max 32512     (decimal 256→32767)
+# hex "01"
+# hex  01→7F           max 127       (decimal 1→127)
 
 cat <<- EOF > "$ca_directory/config_ca_revocation.cfg"
 ### BEGIN SMIME CA minimal CRL x509v3_config
@@ -76,6 +86,23 @@ cat <<- EOF > "$ca_directory/config_ca_revocation.cfg"
 [ CRL_extension ]
 
 	authorityKeyIdentifier = keyid:always
+	#authorityInfoAccess = @auth_info_access
+	#issuingDistributionPoint = critical, @idp_section
+
+[ auth_info_access ]
+
+	caIssuers;URI.0=http://my1.ca/cert_root.der
+	#caIssuers;URI.2=http://my2.ca/cert_root.der
+
+[ idp_section ]
+
+	fullname = URI:http://my1.ca/crl/$ca_serial_number.crl, URI:http://my2.ca/crl/$ca_serial_number.crl
+	#onlysomereasons = keyCompromise, CACompromise
+
+	#onlyuser = TRUE
+	#onlyCA = TRUE
+	#onlyAA = TRUE
+	#indirectCRL = TRUE
 
 ### END SMIME CA minimal CRL x509v3_config
 EOF
