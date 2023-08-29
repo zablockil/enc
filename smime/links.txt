@@ -146,6 +146,7 @@ https://www.digicert.com/kb/csr-creation.htm
 https://www.digicert.com/kb/util/csr-creation-microsoft-servers-using-digicert-utility.htm
 https://www.globalsign.com/en/resources/white-paper-smime-compatibility.pdf
 https://www.gnupg.org/faq/gnupg-faq.html
+https://www.golinuxcloud.com/openssl-create-certificate-chain-linux/
 https://www.golinuxcloud.com/revoke-certificate-generate-crl-openssl/
 https://www.gradenegger.eu/?p=950
 https://www.hindawi.com/journals/scn/2019/6013846/
