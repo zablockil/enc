@@ -144,6 +144,11 @@ echo $(date --rfc-3339=seconds)
 #	$ openssl crl2pkcs7 -in CRL.crl -certfile cert_root.crt \
 #		-certfile NEW_cert_user.crt > credential_public.p7b
 #
+# Check crl status:
+# $ openssl verify -verbose -CAfile cert_root.crt -crl_check -CRLfile [serial].crl user.crt
+# error 23 at 0 depth lookup: certificate revoked
+# error .../user.crt: verification failed
+#
 ###
 #
 #
