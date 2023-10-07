@@ -1,0 +1,90 @@
+# creates NIST EC / RSA X.509 S/MIME certificate
+# key scheme: C + SE [dual use]
+# change the parameters, then copy-paste to PowerShell
+# tested on PSVersion 7.3.0 / Microsoft Windows 10.0.19045
+
+1. check version and available EC
+	$PSVersionTable
+	Get-Command -Module PKI
+	certutil.exe -displayEccCurve
+
+2. open "certmgr.msc"
+
+3. make ROOT/Issuer cert
+	$selfSignedRootCA = New-SelfSignedCertificate -Type Custom -Subject "CN=TEST ROOT selfSigned NIST" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.4","2.5.29.19={critical}{text}cA=true") -KeyUsage "CertSign","CRLSign" -KeyAlgorithm nistP521 -HashAlgorithm SHA512 -KeyUsageProperty All -KeyExportPolicy Exportable -CertStoreLocation "Cert:\CurrentUser\My" -notbefore (Get-Date) -NotAfter (Get-Date).AddYears(10)
+
+# -KeyAlgorithm :: nistP256/nistP384/nistP521
+
+4.  make USER/Subscriber cert
+4a. NIST EC
+	$endEntityCertificate = New-SelfSignedCertificate -Type Custom -Subject "CN=TEST endEntity NIST" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.4","2.5.29.19={critical}{text}cA=false","2.5.29.17={text}email=test@example.com") -KeyUsage "DigitalSignature","KeyAgreement" -KeyAlgorithm nistP256 -HashAlgorithm SHA256 -KeyUsageProperty All -KeyExportPolicy Exportable -CertStoreLocation "Cert:\CurrentUser\My" -notbefore (Get-Date) -NotAfter (Get-Date).AddYears(10).AddDays(-1) -Signer $selfSignedRootCA
+4b. or RSA (EKU for "Protect-CmsMessage" cmd)
+	$endEntityCertificate = New-SelfSignedCertificate -Type Custom -Subject "CN=TEST endEntity RSA" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.4,1.3.6.1.4.1.311.80.1","2.5.29.19={critical}{text}cA=false","2.5.29.17={text}email=test@example.com") -KeyUsage "DigitalSignature","KeyEncipherment" -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -KeyUsageProperty All -KeyExportPolicy Exportable -CertStoreLocation "Cert:\CurrentUser\My" -notbefore (Get-Date) -NotAfter (Get-Date).AddYears(10).AddDays(-1) -Signer $selfSignedRootCA
+# -KeyLength :: 2048/3072/4096
+# NULL-DN EE cert :: remove -Subject "..." and change '2.5.29.17={text}' to '2.5.29.17={critical}{text}'
+
+5. export user cert, .p12 (without root key)
+	$mypwd = ConvertTo-SecureString -String "password" -Force -AsPlainText
+	$certpath = "Cert:\CurrentUser\My\" + $endEntityCertificate.thumbprint
+	Export-Certificate -Cert $certpath -FilePath "R:\user.der"
+	Export-PfxCertificate -cert $certpath -FilePath "R:\credential_private_encrypted.p12" -Password $mypwd -CryptoAlgorithmOption AES256_SHA256
+
+6. extract .p12 to unencrypted .pem format (now cmd.exe)
+	"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" pkcs12 -in "R:\credential_private_encrypted.p12" -out "R:\credential_private_unencrypted.pem" -nodes
+
+7. extract user private key from unencrypted.pem to user.key file
+	-----BEGIN PRIVATE KEY-----
+	...
+	-----END PRIVATE KEY-----
+
+8. extract user cert from unencrypted.pem to ASCII user.crt file
+	-----BEGIN CERTIFICATE-----
+	...
+	-----END CERTIFICATE-----
+
+9. inspect user.key file
+	openssl pkey -text -noout -in R:\user.key
+	openssl asn1parse -inform PEM -in R:\user.key
+
+10. inspect user.crt file
+	openssl x509 -text -noout -in R:\user.crt
+	openssl asn1parse -inform PEM -in R:\user.crt
+
+11. [RSA only] create simple message, MIME header :: message.txt
+	Content-Type: text/plain; charset=utf-8; format=flowed
+
+	S/MIME test Encrypted Message
+
+12. [RSA only] encrypt that message :: cms format (PowerShell)
+	Protect-CmsMessage -To .\user.der -Path .\message.txt -OutFile OUT.cms
+
+13. [RSA only] create simple e-mail file :: message.eml
+	Subject: test Protect-CmsMessage
+	MIME-Version: 1.0
+	Content-Type: application/pkcs7-mime; smime-type=enveloped-data; name=smime.p7m
+	Content-Transfer-Encoding: base64
+	Content-Disposition: attachment; filename=smime.p7m
+
+	[paste base64 code from "OUT.cms"]
+
+14. [RSA only] inspect message.eml file (cmd.exe)
+	openssl cms -decrypt -inform SMIME -in R:\message.eml -cmsout -print
+
+15. [RSA only] import .p12 file in your e-mail app, open "message.eml"
+
+
+
+links:
+------
+https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-create-self-signed-certificate
+https://learn.microsoft.com/en-us/powershell/module/pki/new-selfsignedcertificate
+https://learn.microsoft.com/en-us/powershell/module/pki/export-certificate
+https://learn.microsoft.com/en-us/powershell/module/pki/export-pfxcertificate
+https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/protect-cmsmessage
+https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/unprotect-cmsmessage
+https://woshub.com/how-to-create-self-signed-certificate-with-powershell/
+https://www.sysadmins.lv/blog-en/self-signed-certificate-creation-with-powershell.aspx
+http://vcloud-lab.com/entries/powershell/powershell-generate-self-signed-certificate-with-self-signed-root-ca-signer
+https://www.emailarchitect.net/smime/doc/html/object_encrypt.htm
+
+# EOF

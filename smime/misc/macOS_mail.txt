@@ -1,0 +1,7 @@
+find and replace:
+
+openssl pkcs12 -export -certpbe AES-256-CBC -keypbe AES-256-CBC -macalg sha256 -name "$friendly_name_pkcs12" -in "private/$user_alias/credential_private_unencrypted.pem" -out "private/$user_alias/credential_private_encrypted.p12" -passout file:"private/$user_alias/credential_private_password.txt"
+
+↓ ↓ ↓
+
+openssl pkcs12 -export -certpbe PBE-SHA1-3DES -keypbe PBE-SHA1-3DES -macalg sha1 -name "$friendly_name_pkcs12" -in "private/$user_alias/credential_private_unencrypted.pem" -out "private/$user_alias/credential_private_encrypted.p12" -passout file:"private/$user_alias/credential_private_password.txt"
