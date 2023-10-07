@@ -6,7 +6,7 @@
 test_commonName="John Doe"
 test_email="test@example.com"
 
-custom_days=$(($(($(date +%s -d "10 years") - $(date +%s)))/$((60*60*24))))
+custom_days="$(($(($(date +%s -d "10 years") - $(date +%s)))/$((60*60*24))))"
 user_usage_period_days="1185"
 root_usage_period_days="$custom_days"
 
@@ -24,7 +24,7 @@ keygen_bits_user_E="2048"
 
 # -set_serial "0x$(custom_serial)"
 custom_serial () {
-	echo $(shuf -i 1-7 -n 1)$(openssl rand -hex 20) | cut -c1-16
+	echo "$(shuf -i 1-7 -n 1)$(openssl rand -hex 20)" | cut -c1-16
 }
 
 # hex RootCA -set_serial "0x00"
@@ -80,7 +80,7 @@ EOF
 
 OPENSSL_CONF="private/root/config_root.cfg"
 
-openssl req -new -x509 -days $root_usage_period_days -$default_md_root -set_serial "0x$(custom_serial)" -config "private/root/config_root.cfg" -key "private/root/key_root.pem" > "private/root/cert_root.crt"
+openssl req -new -x509 -days "$root_usage_period_days" -"$default_md_root" -set_serial "0x$(custom_serial)" -config "$OPENSSL_CONF" -key "private/root/key_root.pem" > "private/root/cert_root.crt"
 {
 	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/root/cert_root.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/root/cert_root.crt"
@@ -156,14 +156,14 @@ EOF
 
 OPENSSL_CONF="private/$user_alias/config_user.cfg"
 
-openssl req -new -config "private/$user_alias/config_user.cfg" -subj "/" -key "private/$user_alias/key_user_S.pem" > "private/$user_alias/csr_user_S.csr"
-openssl req -new -config "private/$user_alias/config_user.cfg" -subj "/" -key "private/$user_alias/key_user_E.pem" > "private/$user_alias/csr_user_E.csr"
+openssl req -new -config "$OPENSSL_CONF" -subj "/" -key "private/$user_alias/key_user_S.pem" > "private/$user_alias/csr_user_S.csr"
+openssl req -new -config "$OPENSSL_CONF" -subj "/" -key "private/$user_alias/key_user_E.pem" > "private/$user_alias/csr_user_E.csr"
 
 openssl req -text -noout -verify -in "private/$user_alias/csr_user_S.csr" > "private/$user_alias/csr_user_S.csr.txt"
 openssl req -text -noout -verify -in "private/$user_alias/csr_user_E.csr" > "private/$user_alias/csr_user_E.csr.txt"
 
-openssl x509 -req -days $user_usage_period_days -$default_md_user_S -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_S.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile "private/$user_alias/config_user.cfg" -extensions x509_smime_rsa_user_S_ext > "private/$user_alias/cert_user_S.crt"
-openssl x509 -req -days $user_usage_period_days -$default_md_user_E -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_E.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile "private/$user_alias/config_user.cfg" -extensions x509_smime_rsa_user_E_ext > "private/$user_alias/cert_user_E.crt"
+openssl x509 -req -days "$user_usage_period_days" -"$default_md_user_S" -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_S.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile "$OPENSSL_CONF" -extensions x509_smime_rsa_user_S_ext > "private/$user_alias/cert_user_S.crt"
+openssl x509 -req -days "$user_usage_period_days" -"$default_md_user_E" -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_E.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile "$OPENSSL_CONF" -extensions x509_smime_rsa_user_E_ext > "private/$user_alias/cert_user_E.crt"
 
 {
 	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/$user_alias/cert_user_S.crt"
