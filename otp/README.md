@@ -2,7 +2,7 @@
 
 Uses OpenSSL and generally available Linux tools (GNU coreutils, awk)
 
-![logo](https://github.com/zablockil/enc/tree/main/otp/logo.jpg?raw=true)
+![logo](logo.jpg?raw=true)
 
 #### Plaintext ⊕ KeyStream ⇒ Ciphertext = Ciphertext ⊕ KeyStream ⇒ Plaintext
 
