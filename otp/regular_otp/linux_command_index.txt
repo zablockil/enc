@@ -1,0 +1,17 @@
+https://www.pixelbeat.org/docs/unix_commands/
+
+awk
+basename
+cat
+cut
+date
+dd
+df
+echo
+od
+paste
+pwd
+stat
+tail
+
++ openssl
