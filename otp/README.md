@@ -2,7 +2,7 @@
 
 Uses OpenSSL and generally available Linux tools (GNU coreutils, awk)
 
-![logo](logo.jpg?raw=true)
+<img src="logo.jpg?raw=true" alt="logo" width="300" height="300"/>
 
 #### Plaintext ⊕ KeyStream ⇒ Ciphertext = Ciphertext ⊕ KeyStream ⇒ Plaintext
 
