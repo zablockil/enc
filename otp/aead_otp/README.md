@@ -7,7 +7,9 @@
 5. encrypt the file: `./encrypt_otp_gcm.sh secret_message.doc RECIPIENT_2.crt`
 
 · Encrypted file will be placed in the working directory (`$pwd/ENCRYPTED/...`) and will be named rand`.der`.
+
 · Decrypted file will be placed in the working directory (`$pwd/DECRYPTED/...`) and will be named as they were named by the sender.
+
 · The counter and log will be saved where the one-time key file is located.
 
 ### Details of usage
