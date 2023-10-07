@@ -8,7 +8,7 @@ test_givenName="Edward"
 test_surname="Iceberg"
 test_email="test@example.com"
 
-custom_days=$(($(($(date +%s -d "10 years") - $(date +%s)))/$((60*60*24))))
+custom_days="$(($(($(date +%s -d "10 years") - $(date +%s)))/$((60*60*24))))"
 user_usage_period_days="1185"
 root_usage_period_days="$custom_days"
 
@@ -23,7 +23,7 @@ algorithm_user_E="X25519"
 
 # -set_serial "0x$(custom_serial)"
 custom_serial () {
-	echo $(shuf -i 1-7 -n 1)$(openssl rand -hex 20) | cut -c1-16
+	echo "$(shuf -i 1-7 -n 1)$(openssl rand -hex 20)" | cut -c1-16
 }
 
 # hex RootCA -set_serial "0x00"
@@ -47,7 +47,6 @@ openssl pkey -pubout -outform DER -in "private/root/key_root.pem" -out "private/
 
 root_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 root_PublicKey_sha256=$(openssl dgst -c -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-root_PublicKey_sha1=$(openssl dgst -c -sha1 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 cat <<- EOF > "private/root/config_root.cfg"
 ### BEGIN SMIME dual-key [EDWARDS] ROOT x509v3_config
@@ -106,7 +105,7 @@ EOF
 
 OPENSSL_CONF="private/root/config_root.cfg"
 
-openssl req -new -x509 -days $root_usage_period_days -set_serial "0x$(custom_serial)" -config "private/root/config_root.cfg" -key "private/root/key_root.pem" > "private/root/cert_root.crt"
+openssl req -new -x509 -days "$root_usage_period_days" -set_serial "0x$(custom_serial)" -config "$OPENSSL_CONF" -key "private/root/key_root.pem" > "private/root/cert_root.crt"
 {
 	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/root/cert_root.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/root/cert_root.crt"
@@ -129,11 +128,9 @@ openssl pkey -pubout -outform DER -in "private/$user_alias/key_user_E.pem" -out 
 
 user_S_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 user_S_PublicKey_sha256=$(openssl dgst -c -sha256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_S_PublicKey_sha1=$(openssl dgst -c -sha1 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 user_E_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 user_E_PublicKey_sha256=$(openssl dgst -c -sha256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_E_PublicKey_sha1=$(openssl dgst -c -sha1 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 dummy_crl_root=$(openssl x509 -noout -serial -in 'private/root/cert_root.crt' | awk -F '=' '{print $NF}')
 
@@ -237,14 +234,14 @@ EOF
 OPENSSL_CONF="private/$user_alias/config_user.cfg"
 
 # NULL-DN EE cert
-#openssl req -new -config "private/$user_alias/config_user.cfg" -subj "/" -key "private/$user_alias/key_user_S.pem" > "private/$user_alias/csr_user_S.csr"
+#openssl req -new -config "$OPENSSL_CONF" -subj "/" -key "private/$user_alias/key_user_S.pem" > "private/$user_alias/csr_user_S.csr"
 # regular DN EE cert
-openssl req -new -config "private/$user_alias/config_user.cfg" -key "private/$user_alias/key_user_S.pem" > "private/$user_alias/csr_user_S.csr"
+openssl req -new -config "$OPENSSL_CONF" -key "private/$user_alias/key_user_S.pem" > "private/$user_alias/csr_user_S.csr"
 
 openssl req -text -noout -verify -in "private/$user_alias/csr_user_S.csr" > "private/$user_alias/csr_user_S.csr.txt"
 
-openssl x509 -req -days $user_usage_period_days -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_S.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile "private/$user_alias/config_user.cfg" -extensions x509_smime_edwards_user_S_ext > "private/$user_alias/cert_user_S.crt"
-openssl x509 -req -days $user_usage_period_days -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_S.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -force_pubkey "private/$user_alias/key_user_E_pub.der" -keyform DER -extfile "private/$user_alias/config_user.cfg" -extensions x509_smime_edwards_user_E_ext > "private/$user_alias/cert_user_E.crt"
+openssl x509 -req -days "$user_usage_period_days" -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_S.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile "$OPENSSL_CONF" -extensions x509_smime_edwards_user_S_ext > "private/$user_alias/cert_user_S.crt"
+openssl x509 -req -days "$user_usage_period_days" -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_S.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -force_pubkey "private/$user_alias/key_user_E_pub.der" -keyform DER -extfile "$OPENSSL_CONF" -extensions x509_smime_edwards_user_E_ext > "private/$user_alias/cert_user_E.crt"
 
 {
 	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/$user_alias/cert_user_S.crt"
