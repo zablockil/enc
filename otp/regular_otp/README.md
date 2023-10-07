@@ -7,6 +7,7 @@
 5. encrypt the file: `./encrypt_otp_regular.sh OTP_KEY.dat secret_message.doc 0`
 
 · Encrypted file will be placed in the working directory (`$pwd`) and will be named filename`.der`.
+
 · Decrypted file will be placed in the working directory (`$pwd`) and will be named filename`.decrypted`.
 
 ### Details of usage
