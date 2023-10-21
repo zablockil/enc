@@ -58,20 +58,34 @@ if [ "$(disk_space_func)" -lt "$one" ]; then
   exit 1
 fi
 
-# OpenSSL 1.0 and above
-make_garbage_no1 () {
-  openssl rand 10485760 | openssl dgst -sha256 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c1-32
-  }
-make_garbage_no2 () {
-  dd if=/dev/urandom bs=10485760 count=1 status=none | openssl dgst -sha256 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c1-32
-  }
-make_garbage_no3 () {
-  openssl rand 10485760 | openssl dgst -sha512 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c65-128
-  }
-make_garbage_no4 () {
-  dd if=/dev/urandom bs=10485760 count=1 status=none | openssl dgst -sha512 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c65-128
+shuf_10_50_mib () {
+  echo "$(shuf -i 10485760-52428800 -n 1)"
   }
 
+make_garbage_0 () {
+  openssl rand "$(shuf_10_50_mib)" > /dev/null
+  dd if=/dev/urandom bs="$(shuf_10_50_mib)" count=1 status=none > /dev/null
+  }
+
+# OpenSSL 1.0 and above
+make_garbage_no1 () {
+  make_garbage_0
+  openssl rand "$(shuf_10_50_mib)" | openssl dgst -sha256 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c1-32
+  }
+make_garbage_no2 () {
+  make_garbage_0
+  dd if=/dev/urandom bs="$(shuf_10_50_mib)" count=1 status=none | openssl dgst -sha256 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c1-32
+  }
+make_garbage_no3 () {
+  make_garbage_0
+  openssl rand "$(shuf_10_50_mib)" | openssl dgst -sha512 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c65-128
+  }
+make_garbage_no4 () {
+  make_garbage_0
+  dd if=/dev/urandom bs="$(shuf_10_50_mib)" count=1 status=none | openssl dgst -sha512 | awk -F '=[[:blank:]]' '{print $NF}' | cut -c65-128
+  }
+
+make_garbage_0
 
 # you can use "-camellia-256-ctr" / "-aria-256-ctr"
 
