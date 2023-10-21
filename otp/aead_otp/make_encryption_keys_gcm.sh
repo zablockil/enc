@@ -141,22 +141,39 @@ cat "$four.crt" >> "$four.pem"
 ##########
 #
 # One-time Pad part
-# you can use "-camellia-256-ctr" / "-aria-256-ctr"
 #
 ##########
 
+shuf_10_50_mib () {
+  echo "$(shuf -i 10485760-52428800 -n 1)"
+  }
+
+make_garbage_0 () {
+  openssl rand "$(shuf_10_50_mib)" > /dev/null
+  dd if=/dev/urandom bs="$(shuf_10_50_mib)" count=1 status=none > /dev/null
+  }
+
 make_garbage_no5 () {
-  openssl rand 10485760 | openssl dgst -shake256 -xoflen 16 | awk -F '=[[:blank:]]' '{print $NF}'
+  make_garbage_0
+  openssl rand "$(shuf_10_50_mib)" | openssl dgst -shake256 -xoflen 16 | awk -F '=[[:blank:]]' '{print $NF}'
   }
 make_garbage_no6 () {
-  dd if=/dev/urandom bs=10485760 count=1 status=none | openssl dgst -shake256 -xoflen 16 | awk -F '=[[:blank:]]' '{print $NF}'
+  make_garbage_0
+  dd if=/dev/urandom bs="$(shuf_10_50_mib)" count=1 status=none | openssl dgst -shake256 -xoflen 16 | awk -F '=[[:blank:]]' '{print $NF}'
   }
 make_garbage_no7 () {
-  openssl rand 10485760 | openssl dgst -shake256 -xoflen 32 | awk -F '=[[:blank:]]' '{print $NF}'
+  make_garbage_0
+  openssl rand "$(shuf_10_50_mib)" | openssl dgst -shake256 -xoflen 32 | awk -F '=[[:blank:]]' '{print $NF}'
   }
 make_garbage_no8 () {
-  dd if=/dev/urandom bs=10485760 count=1 status=none | openssl dgst -shake256 -xoflen 32 | awk -F '=[[:blank:]]' '{print $NF}'
+  make_garbage_0
+  dd if=/dev/urandom bs="$(shuf_10_50_mib)" count=1 status=none | openssl dgst -shake256 -xoflen 32 | awk -F '=[[:blank:]]' '{print $NF}'
   }
+
+make_garbage_0
+
+# you can use "-camellia-256-ctr" / "-aria-256-ctr"
+
 
 # variant one
 #openssl rand "$one" | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no8)" -iv "$(make_garbage_no6)" -out "$two.dat"
