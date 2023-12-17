@@ -79,11 +79,11 @@ openssl version -a > "$user_alias/private/openssl_version.txt"
 openssl genpkey $user_key_size > "$user_alias/private/key_user.pem"
 openssl pkey -text -noout -in "$user_alias/private/key_user.pem" > "$user_alias/private/key_user.pem.txt"
 openssl pkey -pubout -outform DER -in "$user_alias/private/key_user.pem" -out "$user_alias/private/key_user_pub.der"
-user_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "$user_alias/private/key_user_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_PublicKey_shake256xof32=$(openssl dgst -shake256 "$user_alias/private/key_user_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 {
 	echo "Requested SKI, 256-bit SHAKE-256 over SPKI."
 	echo "-------------------------------------------"
-	echo $user_PublicKey_shake256xof32
+	echo "$user_PublicKey_shake256xof32"
 } > "$user_alias/private/subjectKeyIdentifier.txt"
 
 cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
@@ -169,7 +169,7 @@ openssl req -new -config "$user_alias/private/config_csr_user.cfg" -key "$user_a
 openssl req -text -noout -verify -in "$user_alias/csr_user.csr" > "$user_alias/csr_user.csr.txt"
 
 echo "DONE."
-echo $(date --rfc-3339=seconds)
+date --rfc-3339=seconds
 
 
 ###
