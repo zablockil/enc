@@ -13,6 +13,7 @@ http://web.archive.org/web/20210506192810/https://www.wil.waw.pl/art_prac/2012/G
 https://bl831.als.lbl.gov/~gmeigs/scripting_help/printf_awk_notes.txt
 https://datatracker.ietf.org/doc/html/rfc4086
 https://dwheeler.com/essays/filenames-in-shell.html
+https://en.wikipedia.org/wiki/ISAAC_%28cipher%29
 https://news.ycombinator.com/item?id=12448062
 https://people.csail.mit.edu/henrycg/files/academic/papers/hotos15recommendations.pdf
 https://serverfault.com/questions/151109/how-do-i-get-the-current-unix-time-in-milliseconds-in-bash
@@ -26,12 +27,14 @@ https://unix.stackexchange.com/questions/285237/tar-without-preserving-user
 https://unix.stackexchange.com/questions/305190/remove-last-character-from-string-captured-with-awk
 https://unix.stackexchange.com/questions/55770/does-hexdump-respect-the-endianness-of-its-system/55772#55772
 https://unix.stackexchange.com/questions/6008/get-the-free-space-available-in-current-directory-in-bash/6014#6014
+https://web.archive.org/web/20140623164452/https://www.ncmilitia.org/spycounterspy/fs019.html
 https://web.archive.org/web/20180227190603/www.virtsync.com/c-error-codes-include-errno
 https://web.archive.org/web/20230501214758/https://www.docdroid.net/file/view/IP3aivT/numbers-help-pdf.pdf?e=1682981230&s=589dd36dc1e31ca0bc62aa9b49b6eb35
 https://www.2uo.de/myths-about-urandom
 https://www.cyberciti.biz/faq/linux-bash-exit-status-set-exit-statusin-bash/
 https://www.gnu.org/software/tar/manual/html_section/create-options.html#override
 https://www.loc.gov/preservation/digital/formats/fdd/fdd000531.shtml
+https://www.maizure.org/projects/decoded-gnu-coreutils/shuf.html
 https://www.pixelbeat.org/programming/shell_script_mistakes.html
 https://www.unix.com/shell-programming-and-scripting/149619-convert-hex-binary-send-variable.html
 https://www.unix.com/shell-programming-and-scripting/233581-hexadecimal-binary-conversion.html
