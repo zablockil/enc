@@ -48,8 +48,8 @@ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:$ec_paramgen_curve_root
 openssl pkey -text -noout -in "private/root/key_root.pem" > "private/root/key_root.pem.txt"
 openssl pkey -pubout -outform DER -in "private/root/key_root.pem" -out "private/root/key_root_pub.der"
 
-root_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-root_PublicKey_sha256=$(openssl dgst -c -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+root_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+root_PublicKey_sha256=$(openssl dgst -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 cat <<- EOF > "private/root/config_root.cfg"
 ### BEGIN SMIME dual-key [NIST EC] ROOT x509v3_config
@@ -101,6 +101,7 @@ cat <<- EOF > "private/root/config_root.cfg"
 
 [ polsect ]
 
+	# anyPolicy
 	policyIdentifier=2.5.29.32.0
 
 ### END SMIME dual-key [NIST EC] ROOT x509v3_config
@@ -109,13 +110,14 @@ EOF
 OPENSSL_CONF="private/root/config_root.cfg"
 
 openssl req -new -x509 -days "$root_usage_period_days" -"$default_md_root" -set_serial "0x$(custom_serial)" -config "$OPENSSL_CONF" -key "private/root/key_root.pem" > "private/root/cert_root.crt"
+openssl x509 -outform DER -in "private/root/cert_root.crt" -out "private/root/cert_root.der"
 {
-	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/root/cert_root.crt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/root/cert_root.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/root/cert_root.crt"
 } > "private/root/cert_root.crt.txt"
 
 dummy_crl_root=$(openssl x509 -noout -serial -in 'private/root/cert_root.crt' | awk -F '=' '{print $NF}')
-#echo "" > "private/root/$dummy_crl_root.crl"
+#echo "" > "private/root/$dummy_crl_root.der.crl"
 
 
 # USER/Subscriber
@@ -129,11 +131,11 @@ openssl pkey -text -noout -in "private/$user_alias/key_user_E.pem" > "private/$u
 openssl pkey -pubout -outform DER -in "private/$user_alias/key_user_S.pem" -out "private/$user_alias/key_user_S_pub.der"
 openssl pkey -pubout -outform DER -in "private/$user_alias/key_user_E.pem" -out "private/$user_alias/key_user_E_pub.der"
 
-user_S_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_S_PublicKey_sha256=$(openssl dgst -c -sha256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_S_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_S_PublicKey_sha256=$(openssl dgst -sha256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
-user_E_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_E_PublicKey_sha256=$(openssl dgst -c -sha256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_E_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_E_PublicKey_sha256=$(openssl dgst -sha256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 dummy_crl_root=$(openssl x509 -noout -serial -in 'private/root/cert_root.crt' | awk -F '=' '{print $NF}')
 
@@ -198,7 +200,7 @@ cat <<- EOF > "private/$user_alias/config_user.cfg"
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
 $MAIN_x509_extensions
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
-	#crlDistributionPoints=URI:http://my1.ca/crl/$dummy_crl_root.crl, URI:http://my2.ca/crl/$dummy_crl_root.crl
+	#crlDistributionPoints=URI:http://my1.ca/crl/$dummy_crl_root.der.crl, URI:http://my2.ca/crl/$dummy_crl_root.der.crl
 
 [ x509_smime_nist_user_E_ext ]
 
@@ -211,7 +213,7 @@ $MAIN_x509_extensions
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
 $MAIN_x509_extensions
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
-	#crlDistributionPoints=URI:http://my1.ca/crl/$dummy_crl_root.crl, URI:http://my2.ca/crl/$dummy_crl_root.crl
+	#crlDistributionPoints=URI:http://my1.ca/crl/$dummy_crl_root.der.crl, URI:http://my2.ca/crl/$dummy_crl_root.der.crl
 
 [ polsect ]
 
@@ -250,11 +252,11 @@ openssl x509 -req -days "$user_usage_period_days" -"$default_md_user_S" -set_ser
 openssl x509 -req -days "$user_usage_period_days" -"$default_md_user_E" -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_E.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile "$OPENSSL_CONF" -extensions x509_smime_nist_user_E_ext > "private/$user_alias/cert_user_E.crt"
 
 {
-	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/$user_alias/cert_user_S.crt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_S.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_S.crt"
 } > "private/$user_alias/cert_user_S.crt.txt"
 {
-	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/$user_alias/cert_user_E.crt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_E.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_E.crt"
 } > "private/$user_alias/cert_user_E.crt.txt"
 
@@ -290,6 +292,7 @@ openssl pkcs12 -export -certpbe AES-256-CBC -keypbe AES-256-CBC -macalg sha256 -
 # |   +---root
 # |   |       cert_root.crt
 # |   |       cert_root.crt.txt
+# |   |       cert_root.der
 # |   |       config_root.cfg
 # |   |       key_root.pem
 # |   |       key_root.pem.txt
