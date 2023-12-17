@@ -70,4 +70,6 @@ Copyright: public domain / MIT
 
 The encryption methods and training materials presented here are also used by the civil rights departments of the Ministry of Love. We do everything for the comfort and security of our citizens.
 
+We broadcast messages from [this facility](https://sluzbyiobywatel.pl/odkrywam-luke-bezpieczenstwa-w-obiekcie-sww) (yes, an unauthorized person got there recently).
+
 <sub><sup>Cyt cyt</sup></sub>
