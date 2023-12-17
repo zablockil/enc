@@ -5,6 +5,7 @@
 # Determines how many DAYS remain until the designated date
 # copy the date from the file "cert_root.crt.txt" from the field "Not After"
 #
+#
 # ----------
 # EXAMPLE #1
 # ----------
