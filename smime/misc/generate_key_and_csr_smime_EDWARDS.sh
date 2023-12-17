@@ -68,8 +68,8 @@ openssl pkey -text -noout -in "$user_alias/private/key_user_E.pem" > "$user_alia
 openssl pkey -pubout -outform DER -in "$user_alias/private/key_user_S.pem" -out "$user_alias/private/key_user_pub_S.der"
 openssl pkey -pubout -outform DER -in "$user_alias/private/key_user_E.pem" -out "$user_alias/private/key_user_pub_E.der"
 
-user_S_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "$user_alias/private/key_user_pub_S.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_E_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "$user_alias/private/key_user_pub_E.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_S_PublicKey_shake256xof32=$(openssl dgst -shake256 "$user_alias/private/key_user_pub_S.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_E_PublicKey_shake256xof32=$(openssl dgst -shake256 "$user_alias/private/key_user_pub_E.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 # X25519 and X448 → -strparse 9
 openssl pkey -pubout -outform DER -in "$user_alias/private/key_user_E.pem" | openssl asn1parse -inform DER -noout -strparse 9 -out "$user_alias/private/key_user_E_BITSTRING.der"
@@ -79,11 +79,11 @@ user_E_pub_strparse9=$(od -An -vtx1 "$user_alias/private/key_user_E_BITSTRING.de
 	echo "Requested SKI, 256-bit SHAKE-256 over SPKI."
 	echo "-------------------------------------------"
 	echo "Signing key:"
-	echo "SKI: "$user_S_PublicKey_shake256xof32
+	echo "SKI: $user_S_PublicKey_shake256xof32"
 	echo "--"
 	echo "Encrypting key:"
-	echo "pub: "$user_E_pub_strparse9
-	echo "SKI: "$user_E_PublicKey_shake256xof32
+	echo "pub: $user_E_pub_strparse9"
+	echo "SKI: $user_E_PublicKey_shake256xof32"
 } > "$user_alias/private/subjectKeyIdentifier.txt"
 
 cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
@@ -199,7 +199,7 @@ openssl req -new -config "$user_alias/private/config_csr_user.cfg" -key "$user_a
 openssl req -text -noout -verify -in "$user_alias/csr_user.csr" > "$user_alias/csr_user.csr.txt"
 
 echo "DONE."
-echo $(date --rfc-3339=seconds)
+date --rfc-3339=seconds
 
 
 ###
