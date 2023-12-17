@@ -11,6 +11,7 @@ echo
 od
 paste
 pwd
+shuf
 stat
 tail
 
