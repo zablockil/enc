@@ -55,7 +55,7 @@ The script was based on the findings of the *CA/Browser Forum* and [document](ht
 | --- | --- | --- | --- |
 | RSA (PKCS#1 v1.5) | **1**)Root (primary key, Certify) **2**)User (subkey, Sign, Encrypt) | `clean_RSA_single-key.sh` | *full* |
 | [NIST EC](https://datatracker.ietf.org/doc/html/rfc3279#section-2.3.5)[^2] (ECDSA/ECDH) | **1**)Root (primary key, Certify) **2**)User (subkey, Sign, Encrypt) | `clean_NIST_single-key.sh` | *partial* |
-| [Edwards-curve](https://datatracker.ietf.org/doc/html/rfc8410#section-5) (EdDSA/ECDH)[^3] | **1**)Root (primary key, Certify) **2**)User (subkey, Sign) **3**)User (subkey, Encrypt) | `clean_EDWARDS_dual-key.sh` | *none* |
+| [Edwards-curve](https://datatracker.ietf.org/doc/html/rfc8410#section-5) (EdDSA/EdDH)[^3] | **1**)Root (primary key, Certify) **2**)User (subkey, Sign) **3**)User (subkey, Encrypt) | `clean_EDWARDS_dual-key.sh` | *none* |
 
 [^1]: by 2023.
 
