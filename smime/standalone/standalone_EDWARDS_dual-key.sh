@@ -43,7 +43,7 @@ openssl genpkey -algorithm $algorithm_root > "private/root/key_root.pem"
 openssl pkey -text -noout -in "private/root/key_root.pem" > "private/root/key_root.pem.txt"
 openssl pkey -pubout -outform DER -in "private/root/key_root.pem" -out "private/root/key_root_pub.der"
 
-root_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+root_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 cat <<- EOF > "private/root/config_root.cfg"
 ### BEGIN SMIME standalone dual-key [EDWARDS] ROOT x509v3_config
@@ -79,7 +79,7 @@ OPENSSL_CONF="private/root/config_root.cfg"
 
 openssl req -new -x509 -days "$root_usage_period_days" -set_serial "0x$(custom_serial)" -config "$OPENSSL_CONF" -key "private/root/key_root.pem" > "private/root/cert_root.crt"
 {
-	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/root/cert_root.crt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/root/cert_root.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/root/cert_root.crt"
 } > "private/root/cert_root.crt.txt"
 
@@ -94,8 +94,8 @@ openssl pkey -text -noout -in "private/$user_alias/key_user_E.pem" > "private/$u
 openssl pkey -pubout -outform DER -in "private/$user_alias/key_user_S.pem" -out "private/$user_alias/key_user_S_pub.der"
 openssl pkey -pubout -outform DER -in "private/$user_alias/key_user_E.pem" -out "private/$user_alias/key_user_E_pub.der"
 
-user_S_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_E_PublicKey_shake256xof32=$(openssl dgst -c -shake256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_S_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/$user_alias/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_E_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/$user_alias/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 read -r -d '' MAIN_x509_extensions <<-'EOF'
 	basicConstraints = critical,CA:FALSE
@@ -161,11 +161,11 @@ openssl x509 -req -days "$user_usage_period_days" -set_serial "0x$(custom_serial
 openssl x509 -req -days "$user_usage_period_days" -set_serial "0x$(custom_serial)" -in "private/$user_alias/csr_user_S.csr" -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -force_pubkey "private/$user_alias/key_user_E_pub.der" -keyform DER -extfile "$OPENSSL_CONF" -extensions x509_smime_edwards_user_E_ext > "private/$user_alias/cert_user_E.crt"
 
 {
-	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/$user_alias/cert_user_S.crt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_S.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_S.crt"
 } > "private/$user_alias/cert_user_S.crt.txt"
 {
-	openssl x509 -purpose -text -noout -sha256 -fingerprint -in "private/$user_alias/cert_user_E.crt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_E.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_E.crt"
 } > "private/$user_alias/cert_user_E.crt.txt"
 
