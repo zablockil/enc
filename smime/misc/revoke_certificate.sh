@@ -19,7 +19,7 @@
 # ./revoke_certificate.sh
 #
 # · The finished .crl file will be located in:
-#  "private/root/[serial].crl"
+#  "private/root/[serial].der.crl"
 #
 # support OpenSSL 1.1.1 and above
 #
@@ -45,7 +45,7 @@ default_md_crl="sha256"
 # for Ed25519/Ed448 irrelevant
 
 # "$dummy_crl_root" from "clean_RSA_single-key.sh"
-ca_serial_number=$(openssl x509 -noout -serial -in $ca_directory/cert_root.crt | awk -F '=' '{print $NF}')
+ca_serial_number="$(openssl x509 -noout -serial -in $ca_directory/cert_root.crt | awk -F '=' '{print $NF}')"
 
 
 
@@ -91,12 +91,12 @@ cat <<- EOF > "$ca_directory/config_ca_revocation.cfg"
 
 [ auth_info_access ]
 
-	caIssuers;URI.0=http://my1.ca/cert_root.der
-	#caIssuers;URI.2=http://my2.ca/cert_root.der
+	caIssuers;URI.0=http://my1.ca/cert_chain.p7c
+	caIssuers;URI.1=http://my1.ca/cert_root.der
 
 [ idp_section ]
 
-	fullname = URI:http://my1.ca/crl/$ca_serial_number.crl, URI:http://my2.ca/crl/$ca_serial_number.crl
+	fullname = URI:http://my1.ca/crl/$ca_serial_number.der.crl, URI:http://my2.ca/crl/$ca_serial_number.der.crl
 	#onlysomereasons = keyCompromise, CACompromise
 
 	#onlyuser = TRUE
@@ -109,7 +109,7 @@ EOF
 
 OPENSSL_CONF="$ca_directory/config_ca_revocation.cfg"
 
-openssl ca -config "$OPENSSL_CONF" -gencrl -out "$ca_directory/$ca_serial_number.crl"
+openssl ca -config "$OPENSSL_CONF" -gencrl -out "$ca_directory/$ca_serial_number.pem.crl"
 
 ##########
 # After revoking the FIRST certificate, comment the previous lines    ↑↑↑  ↑↑↑
@@ -126,13 +126,15 @@ OPENSSL_CONF="$ca_directory/config_ca_revocation.cfg"
 openssl ca -config "$OPENSSL_CONF" -crl_reason keyCompromise -revoke "$revoke_cert"
 
 # Refresh the Certificate Revocation List
-openssl ca -config "$OPENSSL_CONF" -gencrl -out "$ca_directory/$ca_serial_number.crl"
+openssl ca -config "$OPENSSL_CONF" -gencrl -out "$ca_directory/$ca_serial_number.pem.crl"
 
-openssl crl -text -noout -in "$ca_directory/$ca_serial_number.crl" > "$ca_directory/$ca_serial_number.crl.txt"
+openssl crl -outform DER -in "$ca_directory/$ca_serial_number.pem.crl" -out "$ca_directory/$ca_serial_number.der.crl"
+
+openssl crl -text -noout -in "$ca_directory/$ca_serial_number.pem.crl" > "$ca_directory/$ca_serial_number.pem.crl.txt"
 
 echo ""
 echo "DONE."
-echo $(date --rfc-3339=seconds)
+date --rfc-3339=seconds
 
 
 ###
@@ -141,11 +143,11 @@ echo $(date --rfc-3339=seconds)
 #
 # 1) publish the fresh CRL to the CA website (crlDistributionPoints)
 # 2) refresh the .p7b file (offline) and send it to the recipients:
-#	$ openssl crl2pkcs7 -in CRL.crl -certfile cert_root.crt \
+#	$ openssl crl2pkcs7 -in CRL.pem.crl -certfile cert_root.crt \
 #		-certfile NEW_cert_user.crt > credential_public.p7b
 #
 # Check crl status:
-# $ openssl verify -verbose -CAfile cert_root.crt -crl_check -CRLfile [serial].crl user.crt
+# $ openssl verify -verbose -CAfile cert_root.crt -crl_check -CRLfile [serial].pem.crl user.crt
 # error 23 at 0 depth lookup: certificate revoked
 # error .../user.crt: verification failed
 #
