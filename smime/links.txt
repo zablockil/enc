@@ -73,7 +73,6 @@ https://docs.oracle.com/cd/E19226-01/820-7627/bncbs/index.html
 https://dvuckovic.com/2020/12/22/setup-smime-encryption-gmail/
 https://eprint.iacr.org/2019/130.pdf
 https://fm4dd.com/openssl/certexamples.shtm
-https://fm4dd.com/openssl/certexamples.shtm
 https://gist.github.com/briansmith/2ee42439923d8e65a266994d0f70180b
 https://gist.github.com/grugq/03167bed45e774551155
 https://gist.github.com/rmoriz/5945400
@@ -84,6 +83,7 @@ https://github.com/JW0914/Wikis/tree/master/Scripts%2BConfigs/OpenSSL
 https://github.com/Keyfactor/ejbca-ce
 https://github.com/OpenVPN/easy-rsa
 https://github.com/Wouter-Berman/Generate-CSR
+https://github.com/banhao/CSRtoCER
 https://github.com/bitbaba/bitmail/blob/master/doc/subj.sh
 https://github.com/cloudflare/cfssl
 https://github.com/ddulesov/pkcs7/blob/master/gen.sh
@@ -100,6 +100,7 @@ https://github.com/mkropat/sslfie
 https://github.com/openssl/openssl/blob/master/test/smime-certs/mksmime-certs.sh
 https://github.com/openssl/openssl/issues/22344
 https://github.com/openssl/openssl/tree/master/test/certs
+https://github.com/redhat-qe-security/certgen
 https://github.com/viralpoetry/awesome-pki
 https://github.com/xperseguers/ocsp-responder/blob/master/Documentation/CertificateAuthority.md
 https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/-Q70B0Vf6dA/m/xfWIfd16BQAJ
