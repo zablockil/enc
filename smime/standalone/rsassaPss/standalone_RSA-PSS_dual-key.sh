@@ -89,7 +89,7 @@ openssl req -new -x509 -days "$root_usage_period_days" -set_serial "0x$(custom_s
 {
 	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/root/cert_root.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/root/cert_root.crt"
-} > "private/root/cert_root.crt.txt"
+} | awk '{ sub(/[ \t]+$/, ""); print }' > "private/root/cert_root.crt.txt"
 
 # USER/Subscriber
 
@@ -173,11 +173,11 @@ openssl x509 -req -days "$user_usage_period_days" -set_serial "0x$(custom_serial
 {
 	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_S.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_S.crt"
-} > "private/$user_alias/cert_user_S.crt.txt"
+} | awk '{ sub(/[ \t]+$/, ""); print }' > "private/$user_alias/cert_user_S.crt.txt"
 {
 	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_E.crt"
 	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_E.crt"
-} > "private/$user_alias/cert_user_E.crt.txt"
+} | awk '{ sub(/[ \t]+$/, ""); print }' > "private/$user_alias/cert_user_E.crt.txt"
 
 openssl crl2pkcs7 -nocrl -certfile "private/root/cert_root.crt" -certfile "private/$user_alias/cert_user_S.crt" -certfile "private/$user_alias/cert_user_E.crt" > "public_$user_alias/credential_public.p7b"
 
