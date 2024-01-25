@@ -97,6 +97,8 @@ The script was based on the findings of the *CA/Browser Forum* and [document](ht
 
 https://eprint.iacr.org/2019/130.pdf
 
+[X.509 Profile for Autonomous Certificates](https://www.cs.auckland.ac.nz/~pgut001/pubs/autonomous.txt)
+
 ### Author
 
 Leszek Zabłocki
