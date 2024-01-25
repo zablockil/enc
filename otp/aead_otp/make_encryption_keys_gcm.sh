@@ -88,6 +88,9 @@ fi
 # simple, self-signed key+cert
 # see also: "standalone_NIST_single-key.sh"
 #
+# Private key = sign and decrypt
+# Public key  = signature check and encrypt
+#
 ##########
 
 custom_days="$(($(($(date +%s -d "100 years") - $(date +%s)))/$((60*60*24))))"
@@ -121,7 +124,7 @@ commonName=$(serial_alfanum5)
 
 basicConstraints = critical,CA:FALSE
 keyUsage = critical,digitalSignature,keyAgreement
-extendedKeyUsage = clientAuth,emailProtection
+extendedKeyUsage = emailProtection
 #subjectKeyIdentifier = hash
 # ↖ standard rfc-sha1
 subjectKeyIdentifier = "$PublicKey_shake256xof32"
@@ -129,10 +132,10 @@ subjectKeyIdentifier = "$PublicKey_shake256xof32"
 EOF
 }
 
-PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "$three.pem" | openssl dgst -c -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "$three.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
 openssl req -new -x509 -days "$custom_days" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "$three.pem" > "$three.crt"
 
-PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "$four.pem" | openssl dgst -c -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "$four.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
 openssl req -new -x509 -days "$custom_days" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "$four.pem" > "$four.crt"
 
 cat "$three.crt" >> "$three.pem"
