@@ -78,17 +78,17 @@ fi
 basename_one="$(basename "$one")"
 basename_two="$(basename "$two")"
 
-size_KeyStream_mib_approx="$((size_KeyStream / 1048576))"
-size_Plaintext_mib_approx="$((size_Plaintext / 1048576))"
+size_KeyStream_mib_approx="$(echo "$size_KeyStream" | numfmt --to=iec-i)"
+size_Plaintext_mib_approx="$(echo "$size_Plaintext" | numfmt --to=iec-i)"
 
 echo ""
 echo "@ @ @"
 echo "    encryption key filename : $basename_one"
 echo "             input filename : $basename_two"
 echo "                        . . ."
-echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx MiB)"
+echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx)"
 echo "            OTP key pointer : $three"
-echo "            input file size : $size_Plaintext ($size_Plaintext_mib_approx MiB)"
+echo "            input file size : $size_Plaintext ($size_Plaintext_mib_approx)"
 echo "                              [bytes]"
 echo "              PROCESSING FILE"
 echo "                        . . ."
@@ -122,7 +122,7 @@ if ! (paste <(od -An -vtu1 -w1 -j 0 "$two") <(od -An -vtu1 -w1 -j "$three" "$one
 fi
 
 size_Ciphertext="$(stat -c%s "$basename_two.dat")"
-size_Ciphertext_mib_approx="$((size_Ciphertext / 1048576))"
+size_Ciphertext_mib_approx="$(echo "$size_Ciphertext" | numfmt --to=iec-i)"
 
 if [ "$size_Ciphertext" -ne "$size_Plaintext" ]; then
   echo "                        . . ."
@@ -136,13 +136,13 @@ fi
 count_var="$((three + size_Ciphertext))"
 
 KeyStream_free_space="$((size_KeyStream - count_var))"
-KeyStream_free_space_mib_approx="$((KeyStream_free_space / 1048576))"
+KeyStream_free_space_mib_approx="$(echo "$KeyStream_free_space" | numfmt --to=iec-i)"
 
 echo "                        . . ."
-echo "    cipher output file size : $size_Ciphertext ($size_Ciphertext_mib_approx MiB)"
+echo "    cipher output file size : $size_Ciphertext ($size_Ciphertext_mib_approx)"
 echo "       NEXT OTP key pointer : $count_var"
-echo "            free space left : $KeyStream_free_space ($KeyStream_free_space_mib_approx MiB)"
-if [ "$KeyStream_free_space_mib_approx" -eq 0 ]; then
+echo "            free space left : $KeyStream_free_space ($KeyStream_free_space_mib_approx)"
+if [ "$KeyStream_free_space" -lt 1048576 ]; then
   echo "                              it's time to create a new OTP key!"
 fi
 echo "@ @ @"
