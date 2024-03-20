@@ -185,11 +185,11 @@ make_garbage_0
 dd if=/dev/urandom bs="$one" count=1 | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no7)" -iv "$(make_garbage_no5)" -out "$two.dat"
 
 size_KeyStream="$(stat -c%s "$two.dat")"
-size_KeyStream_mib_approx="$((size_KeyStream / 1048576))"
+size_KeyStream_mib_approx="$(echo "$size_KeyStream" | numfmt --to=iec-i)"
 
 echo ""
 echo "# # #"
-echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx MiB)"
+echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx)"
 echo "                              [bytes]"
 echo "# # #"
 

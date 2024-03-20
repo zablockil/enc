@@ -29,6 +29,13 @@ cleaning_up_temporary_files="1"
 add_up_counter_from_log_history="1"
 overwrite_counter_from_sender_if_higher="1"
 
+COL_NORM="$(tput sgr0)"                  # \033(B\033[m
+COL_RED1="$(tput setaf 7 setab 1)"       # \033[37;41m
+COL_RED2="$(tput setaf 7 setab 1 bold)"  # \033[37;41;1m
+COL_GREEN="$(tput setaf 0 setab 2)"      # \033[30;42m
+COL_YELLOW="$(tput setaf 0 setab 3)"     # \033[30;43m
+COL_BLUE="$(tput setaf 7 setab 4)"       # \033[37;44m
+
 # test openssl version 3 (xoflen)
 test_message () {
 cat <<EOF
@@ -150,7 +157,7 @@ fi
 ##########
 
 echo ""
-echo "$ $ $"
+echo "${COL_GREEN}$ $ $""${COL_NORM}"
 echo "      DECRYPTING FILE AES-GCM"
 echo "                        . . ."
 echo "             message intended"
@@ -158,10 +165,10 @@ echo "         for a key with SKI : $certificate_first_16_subjectKeyIdentifier..
 echo "                        . . ."
 
 size_Ciphertext_Aead="$(stat -c%s "$two")"
-size_Ciphertext_Aead_mib_approx="$((size_Ciphertext_Aead / 1048576))"
+size_Ciphertext_Aead_mib_approx="$(echo "$size_Ciphertext_Aead" | numfmt --to=iec-i)"
 
 echo "             input filename : $basename_two"
-echo "            input file size : $size_Ciphertext_Aead ($size_Ciphertext_Aead_mib_approx MiB)"
+echo "            input file size : $size_Ciphertext_Aead ($size_Ciphertext_Aead_mib_approx)"
 echo "                              [bytes]"
 echo "                        . . ."
 
@@ -240,7 +247,7 @@ Ciphertext_shake256xof32_dgst="$(openssl dgst -shake256 "$tmp_dir/$tar_Ciphertex
 
 echo "                        . . ."
 echo "            secret filename : $tar_Plaintext_filename"
-echo "  message encrypted that day: $tar_time"
+echo " message encrypted that day : $tar_time"
 echo ""
 
 error_compromised_func () {
@@ -272,7 +279,7 @@ fi
 
 echo "                        . . ."
 echo "              so far so good!"
-echo "$ $ $"
+echo "${COL_GREEN}$ $ $""${COL_NORM}"
 
 ##########
 #
@@ -301,12 +308,12 @@ fi
 
 if [ "$max_detected_counter_from_log" -gt 0 ] && [ "$max_detected_counter_from_log" -gt "$count_sender_var" ]; then
   KeyStream_reused_space="$((max_detected_counter_from_log - count_sender_var))"
-  KeyStream_reused_space_mib_approx="$((KeyStream_reused_space / 1048576))"
-  echo ""
+  KeyStream_reused_space_mib_approx="$(echo "$KeyStream_reused_space" | numfmt --to=iec-i)"
+  echo "${COL_RED2}"
   echo "-----------------------------"
   echo "------- W A R N I N G -------"
   echo "-----------------------------"
-  echo ""
+  echo "${COL_NORM}${COL_RED1}"
   echo "     It was detected that you"
   echo "         decrypt files out of"
   echo "    the order of receipt from"
@@ -317,7 +324,7 @@ if [ "$max_detected_counter_from_log" -gt 0 ] && [ "$max_detected_counter_from_l
   echo "       max detected counter : $max_detected_counter_from_log"
   echo "             sender counter : $count_sender_var"
   echo "                        . . ."
-  echo "           OTP reused space : $KeyStream_reused_space ($KeyStream_reused_space_mib_approx MiB)"
+  echo "           OTP reused space : $KeyStream_reused_space ($KeyStream_reused_space_mib_approx)"
   echo "                              [bytes]"
   echo "                        . . ."
   echo "               Check the logs"
@@ -325,22 +332,22 @@ if [ "$max_detected_counter_from_log" -gt 0 ] && [ "$max_detected_counter_from_l
   echo "            separate OTP keys"
   echo "              for each party."
   echo ""
-  echo "-----------------------------"
+  echo "${COL_RED2}-----------------------------"
   echo "------- W A R N I N G -------"
-  echo "-----------------------------"
+  echo "-----------------------------${COL_NORM}"
 fi
 
 size_Ciphertext="$(stat -c%s "$tmp_dir/$tar_Ciphertext_filename")"
-size_Ciphertext_mib_approx="$((size_Ciphertext / 1048576))"
+size_Ciphertext_mib_approx="$(echo "$size_Ciphertext" | numfmt --to=iec-i)"
 
 echo ""
-echo "@ @ @"
+echo "${COL_BLUE}@ @ @${COL_NORM}"
 echo "    encryption key filename : $basename_one"
 echo "             input filename : $tar_Ciphertext_filename"
 echo "                        . . ."
 echo "   encryption key file size : $size_KeyStream"
 echo "  key pointer (from sender) : $count_sender_var"
-echo "           secret file size : $size_Ciphertext ($size_Ciphertext_mib_approx MiB)"
+echo "           secret file size : $size_Ciphertext ($size_Ciphertext_mib_approx)"
 echo "                              [bytes]"
 echo "              DECRYPTING FILE"
 echo "                        . . ."
@@ -415,7 +422,7 @@ echo "           output directory : $(pwd -P)/$dir_DECRYPTED"
 echo "            output filename : $tar_Plaintext_filename"
 echo "                        . . ."
 echo "                       enjoy!"
-echo "@ @ @"
+echo "${COL_BLUE}@ @ @${COL_NORM}"
 
 if [ "$cleaning_up_temporary_files" -eq 1 ]; then
   rm -f "$tmp_dir/$tar_Ciphertext_filename"
@@ -425,7 +432,8 @@ if [ "$cleaning_up_temporary_files" -eq 1 ]; then
 fi
 
 echo ""
-echo "DONE."
+echo "${COL_YELLOW}DONE.${COL_NORM}"
+printf "\007"
 date --rfc-3339=seconds
 
 # EOF

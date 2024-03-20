@@ -29,6 +29,13 @@ add_up_counter_from_log_history="1"
 cleaning_up_temporary_files="1"
 keep_dates_in_tar_archive="1"
 
+COL_NORM="$(tput sgr0)"                  # \033(B\033[m
+COL_RED1="$(tput setaf 7 setab 1)"       # \033[37;41m
+COL_RED2="$(tput setaf 7 setab 1 bold)"  # \033[37;41;1m
+COL_GREEN="$(tput setaf 0 setab 2)"      # \033[30;42m
+COL_YELLOW="$(tput setaf 0 setab 3)"     # \033[30;43m
+COL_BLUE="$(tput setaf 7 setab 4)"       # \033[37;44m
+
 # test openssl version 3 (xoflen)
 test_message () {
 cat <<EOF
@@ -180,14 +187,14 @@ if [ "$count_var" -lt 0 ]; then
   exit 1
 fi
 
-size_KeyStream_mib_approx="$((size_KeyStream / 1048576))"
-size_Plaintext_mib_approx="$((size_Plaintext / 1048576))"
+size_KeyStream_mib_approx="$(echo "$size_KeyStream" | numfmt --to=iec-i)"
+size_Plaintext_mib_approx="$(echo "$size_Plaintext" | numfmt --to=iec-i)"
 
 sum_counter_and_Plaintext="$((count_var + size_Plaintext))"
 
 if [ "$sum_counter_and_Plaintext" -gt "$size_KeyStream" ]; then
   KeyStream_missing_space="$((sum_counter_and_Plaintext - size_KeyStream))"
-  KeyStream_missing_space_mib_approx="$((KeyStream_missing_space / 1048576))"
+  KeyStream_missing_space_mib_approx="$(echo "$KeyStream_missing_space" | numfmt --to=iec-i)"
   echo ""
   echo "! ! !"
   echo "      not enough space on OTP"
@@ -195,10 +202,10 @@ if [ "$sum_counter_and_Plaintext" -gt "$size_KeyStream" ]; then
   echo "               I can't do it."
   echo "   Create a new one-time key!"
   echo "                        . . ."
-  echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx MiB)"
+  echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx)"
   echo "            OTP key pointer : $count_var"
-  echo "            input file size : $size_Plaintext ($size_Plaintext_mib_approx MiB)"
-  echo "              missing space : $KeyStream_missing_space ($KeyStream_missing_space_mib_approx MiB)"
+  echo "            input file size : $size_Plaintext ($size_Plaintext_mib_approx)"
+  echo "              missing space : $KeyStream_missing_space ($KeyStream_missing_space_mib_approx)"
   echo "                              [bytes]"
   echo "                        . . ."
   echo "           script TERMINATED!"
@@ -215,12 +222,12 @@ fi
 
 if [ "$max_detected_counter_from_log" -gt 0 ] && [ "$max_detected_counter_from_log" -gt "$count_var" ]; then
   KeyStream_reused_space="$((max_detected_counter_from_log - count_var))"
-  KeyStream_reused_space_mib_approx="$((KeyStream_reused_space / 1048576))"
-  echo ""
+  KeyStream_reused_space_mib_approx="$(echo "$KeyStream_reused_space" | numfmt --to=iec-i)"
+  echo "${COL_RED2}"
   echo "-----------------------------"
   echo "------- W A R N I N G -------"
   echo "-----------------------------"
-  echo ""
+  echo "${COL_NORM}${COL_RED1}"
   echo "     It was detected that you"
   echo "           want to reuse part"
   echo "              of the OTP key."
@@ -228,9 +235,9 @@ if [ "$max_detected_counter_from_log" -gt 0 ] && [ "$max_detected_counter_from_l
   echo "            What's the point?"
   echo ""
   echo "       max detected counter : $max_detected_counter_from_log"
-  echo "               your counter : $count_var"
+  echo "         your local counter : $count_var"
   echo "                        . . ."
-  echo "           OTP reused space : $KeyStream_reused_space ($KeyStream_reused_space_mib_approx MiB)"
+  echo "           OTP reused space : $KeyStream_reused_space ($KeyStream_reused_space_mib_approx)"
   echo "                              [bytes]"
   echo "                        . . ."
   echo "               Check the logs"
@@ -238,20 +245,20 @@ if [ "$max_detected_counter_from_log" -gt 0 ] && [ "$max_detected_counter_from_l
   echo "                  the counter"
   echo "           and re-encrypting."
   echo ""
-  echo "-----------------------------"
+  echo "${COL_RED2}-----------------------------"
   echo "------- W A R N I N G -------"
-  echo "-----------------------------"
+  echo "-----------------------------${COL_NORM}"
   #exit 1
 fi
 
 echo ""
-echo "@ @ @"
+echo "${COL_BLUE}@ @ @${COL_NORM}"
 echo "    encryption key filename : $basename_one"
 echo "             input filename : $basename_two"
 echo "                        . . ."
-echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx MiB)"
+echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx)"
 echo "            OTP key pointer : $count_var"
-echo "            input file size : $size_Plaintext ($size_Plaintext_mib_approx MiB)"
+echo "            input file size : $size_Plaintext ($size_Plaintext_mib_approx)"
 echo "                              [bytes]"
 echo "              PROCESSING FILE"
 echo "                        . . ."
@@ -298,7 +305,7 @@ if ! (paste <(od -An -vtu1 -w1 -j 0 "$two") <(od -An -vtu1 -w1 -j "$count_var" "
 fi
 
 size_Ciphertext="$(stat -c%s "$tmp_dir/$basename_two_clean.dat")"
-size_Ciphertext_mib_approx="$((size_Ciphertext / 1048576))"
+size_Ciphertext_mib_approx="$(echo "$size_Ciphertext" | numfmt --to=iec-i)"
 
 if [ "$size_Ciphertext" -ne "$size_Plaintext" ]; then
   echo "                        . . ."
@@ -325,18 +332,18 @@ echo "$size_Ciphertext" >> "$filename_counter"
 count_var="$(count_func)"
 
 KeyStream_free_space="$((size_KeyStream - count_var))"
-KeyStream_free_space_mib_approx="$((KeyStream_free_space / 1048576))"
+KeyStream_free_space_mib_approx="$(echo "$KeyStream_free_space" | numfmt --to=iec-i)"
 
 echo "                        . . ."
-echo "    cipher output file size : $size_Ciphertext ($size_Ciphertext_mib_approx MiB)"
+echo "    cipher output file size : $size_Ciphertext ($size_Ciphertext_mib_approx)"
 echo "       NEXT OTP key pointer : $count_var"
-echo "            free space left : $KeyStream_free_space ($KeyStream_free_space_mib_approx MiB)"
-if [ "$KeyStream_free_space_mib_approx" -eq 0 ]; then
+echo "            free space left : $KeyStream_free_space ($KeyStream_free_space_mib_approx)"
+if [ "$KeyStream_free_space" -lt 1048576 ]; then
   echo "                              it's time to create a new OTP key!"
 fi
 echo "                        . . ."
 echo "     counter and log UPDATED!"
-echo "@ @ @"
+echo "${COL_BLUE}@ @ @${COL_NORM}"
 
 ##########
 #
@@ -345,7 +352,7 @@ echo "@ @ @"
 ##########
 
 echo ""
-echo "$ $ $"
+echo "${COL_GREEN}$ $ $""${COL_NORM}"
 echo "      ENCRYPTING FILE AES-GCM"
 echo "      you use cert with SKI : $certificate_first_16_subjectKeyIdentifier..."
 echo "                        . . ."
@@ -430,19 +437,19 @@ if [ "$cleaning_up_temporary_files" -eq 1 ]; then
 fi
 
 size_Ciphertext_Aead="$(stat -c%s "$dir_ENCRYPTED/$filename_output.der")"
-size_Ciphertext_Aead_mib_approx="$((size_Ciphertext_Aead / 1048576))"
+size_Ciphertext_Aead_mib_approx="$(echo "$size_Ciphertext_Aead" | numfmt --to=iec-i)"
 
 Ciphertext_Aead_sha256_dgst="$(openssl dgst -sha256 "$dir_ENCRYPTED/$filename_output.der" | awk -F '=[[:blank:]]' '{print $NF}')"
 echo "$Ciphertext_Aead_sha256_dgst *$filename_output.der" > "$dir_ENCRYPTED/$filename_output.der.sha256"
 
 echo "                        . . ."
-echo "             AEAD file size : $size_Ciphertext_Aead ($size_Ciphertext_Aead_mib_approx MiB)"
+echo "             AEAD file size : $size_Ciphertext_Aead ($size_Ciphertext_Aead_mib_approx)"
 echo "                              [bytes]"
 echo "           output directory : $(pwd -P)/$dir_ENCRYPTED"
 echo "            output filename : $filename_output.der"
 echo "                        . . ."
 echo "                          OK!"
-echo "$ $ $"
+echo "${COL_GREEN}$ $ $""${COL_NORM}"
 
 if [ "$cleaning_up_temporary_files" -eq 1 ]; then
   rm -d "$tmp_dir"
@@ -450,7 +457,8 @@ if [ "$cleaning_up_temporary_files" -eq 1 ]; then
 fi
 
 echo ""
-echo "DONE."
+echo "${COL_YELLOW}DONE.${COL_NORM}"
+printf "\007"
 date --rfc-3339=seconds
 
 # EOF

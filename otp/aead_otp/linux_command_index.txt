@@ -13,6 +13,7 @@ echo
 head
 iconv
 mkdir
+numfmt
 od
 paste
 printf
