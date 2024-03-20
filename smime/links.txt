@@ -158,6 +158,10 @@ https://www.betaarchive.com/wiki/index.php?title=Microsoft_KB_Archive/287547
 https://www.blackhat.com/presentations/bh-usa-09/MARLINSPIKE/BHUSA09-Marlinspike-DefeatSSL-SLIDES.pdf
 https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-1.pdf
 https://www.cs.auckland.ac.nz/~pgut001/dumpasn1.cfg
+https://www.cs.auckland.ac.nz/~pgut001/pubs/pkitutorial.pdf
+https://www.cs.auckland.ac.nz/~pgut001/pubs/x509guide.txt
+https://www.cs.auckland.ac.nz/~pgut001/tutorial/T1_Algos_Mechs.pdf
+https://www.cs.auckland.ac.nz/~pgut001/tutorial/T5_Email.pdf
 https://www.digicert.com/blog/creating-a-dedicated-eku-for-document-signing
 https://www.digicert.com/content/dam/digicert/pdfs/ssl-tls-best-practice-workshop-student-guide-en.pdf
 https://www.digicert.com/kb/csr-creation.htm
