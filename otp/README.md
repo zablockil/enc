@@ -47,6 +47,7 @@ again:
 * hobbyists
 * intelligence/counterintelligence services
 * spies
+* traders of Persian second-hand carpets
 
 ### 2 types of script
 
