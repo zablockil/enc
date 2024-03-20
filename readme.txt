@@ -1,3 +1,5 @@
+All scripts also work on Windows (MSYS2 [UCRT64 environment]).
+
 scripts:
 
 * binary one time pad (DONE.)
