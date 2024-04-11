@@ -64,29 +64,29 @@ NIST_P_521="-algorithm EC -pkeyopt ec_paramgen_curve:secp521r1"
 
 # sha256/sha384/sha512
 user_default_md="sha256"
-user_algo="$RSA_algorithm_identifier"
-user_key_size="$RSA_2048"
+user_algo="${RSA_algorithm_identifier}"
+user_key_size="${RSA_2048}"
 
 
 
 # let's go through this
 
-mkdir "$user_alias"
-mkdir "$user_alias/private"
+mkdir "${user_alias}"
+mkdir "${user_alias}/private"
 
-openssl version -a > "$user_alias/private/openssl_version.txt"
+openssl version -a > "${user_alias}/private/openssl_version.txt"
 
-openssl genpkey $user_key_size > "$user_alias/private/key_user.pem"
-openssl pkey -text -noout -in "$user_alias/private/key_user.pem" > "$user_alias/private/key_user.pem.txt"
-openssl pkey -pubout -outform DER -in "$user_alias/private/key_user.pem" -out "$user_alias/private/key_user_pub.der"
-user_PublicKey_shake256xof32=$(openssl dgst -shake256 "$user_alias/private/key_user_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+openssl genpkey ${user_key_size} > "${user_alias}/private/key_user.pem"
+openssl pkey -text -noout -in "${user_alias}/private/key_user.pem" > "${user_alias}/private/key_user.pem.txt"
+openssl pkey -pubout -outform DER -in "${user_alias}/private/key_user.pem" -out "${user_alias}/private/key_user_pub.der"
+user_PublicKey_shake256xof32=$(openssl dgst -shake256 "${user_alias}/private/key_user_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 {
 	echo "Requested SKI, 256-bit SHAKE-256 over SPKI."
 	echo "-------------------------------------------"
-	echo "$user_PublicKey_shake256xof32"
-} > "$user_alias/private/subjectKeyIdentifier.txt"
+	echo "${user_PublicKey_shake256xof32}"
+} > "${user_alias}/private/subjectKeyIdentifier.txt"
 
-cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
+cat <<- EOF > "${user_alias}/private/config_csr_user.cfg"
 ### BEGIN SMIME CSR USER x509v3_config
 
 	oid_section = new_oids
@@ -102,18 +102,18 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 	string_mask = utf8only
 	utf8 = yes
 	prompt = no
-	default_md = $user_default_md
+	default_md = ${user_default_md}
 
 [ smime_user_dn ]
 	# ↖ see: https://github.com/cabforum/smime/blob/main/SBR.md#71426-subject-dn-attributes-for-individual-validated-profile
 
-	commonName=$test_commonName
+	commonName=${test_commonName}
 
 	#givenName=
 	#surname=
 	#pseudonym=
 	#serialNumber=
-	#emailAddress=$test_email
+	#emailAddress=${test_email}
 	#title=
 	#streetAddress=
 	#localityName=
@@ -126,7 +126,7 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 
 [ subject_alt_name ]
 
-	email.0=$test_email
+	email.0=${test_email}
 	#email.1=
 	#email.2=
 	#otherName.0 =1.3.6.1.5.5.7.8.9;FORMAT:UTF8,UTF8String:
@@ -139,7 +139,7 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 	# CA may reject them
 
 	subjectAltName = @subject_alt_name
-	subjectKeyIdentifier = "$user_PublicKey_shake256xof32"
+	subjectKeyIdentifier = ${user_PublicKey_shake256xof32}
 	2.5.29.9=ASN1:SEQUENCE:custom_Request
 
 # https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.8
@@ -150,23 +150,23 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 	capabilityID.0 = SEQUENCE:algorithm_identifier
 
 [ algorithm_identifier ]
-	capabilityID = OID:$user_algo
+	capabilityID = OID:${user_algo}
 	parameter.0 = SEQUENCE:sequence_ski
 [ sequence_ski ]
 	capabilityID = OID:2.5.29.14
 	parameter = SEQUENCE:sequence_shake256
 [ sequence_shake256 ]
 	capabilityID = OID:2.16.840.1.101.3.4.2.12
-	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:$user_PublicKey_shake256xof32
+	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:${user_PublicKey_shake256xof32}
 
 
 ### END SMIME CSR USER x509v3_config
 EOF
 
-OPENSSL_CONF="$user_alias/private/config_csr_user.cfg"
+OPENSSL_CONF="${user_alias}/private/config_csr_user.cfg"
 
-openssl req -new -config "$user_alias/private/config_csr_user.cfg" -key "$user_alias/private/key_user.pem" > "$user_alias/csr_user.csr"
-openssl req -text -noout -verify -in "$user_alias/csr_user.csr" > "$user_alias/csr_user.csr.txt"
+openssl req -new -config "${OPENSSL_CONF}" -key "${user_alias}/private/key_user.pem" > "${user_alias}/csr_user.csr"
+openssl req -text -noout -verify -in "${user_alias}/csr_user.csr" > "${user_alias}/csr_user.csr.txt"
 
 echo "DONE."
 date --rfc-3339=seconds
@@ -240,13 +240,13 @@ date --rfc-3339=seconds
 #	parameter = SEQUENCE:sequence_shake256
 # [ sequence_shake256 ]
 #	capabilityID = OID:2.16.840.1.101.3.4.2.12
-#	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:$user_PublicKey_shake256xof32
+#	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:${user_PublicKey_shake256xof32}
 #
 # as follows:
 #
 # [ sequence_ski ]
 #	capabilityID = OID:2.5.29.14
-#	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:$user_PublicKey_shake256xof32
+#	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:${user_PublicKey_shake256xof32}
 #
 #
 # EOF

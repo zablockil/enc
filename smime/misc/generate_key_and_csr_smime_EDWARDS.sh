@@ -47,46 +47,46 @@ encrypt_algorithm="X25519"
 
 # YOUR CHOICE:
 
-user_algo_sign="$sign_algorithm"
-user_algo_encrypt="$encrypt_algorithm"
+user_algo_sign="${sign_algorithm}"
+user_algo_encrypt="${encrypt_algorithm}"
 
 
 
 # let's go through this
 
-mkdir "$user_alias"
-mkdir "$user_alias/private"
+mkdir "${user_alias}"
+mkdir "${user_alias}/private"
 
-openssl version -a > "$user_alias/private/openssl_version.txt"
+openssl version -a > "${user_alias}/private/openssl_version.txt"
 
-openssl genpkey -algorithm $user_algo_sign > "$user_alias/private/key_user_S.pem"
-openssl genpkey -algorithm $user_algo_encrypt > "$user_alias/private/key_user_E.pem"
+openssl genpkey -algorithm ${user_algo_sign} > "${user_alias}/private/key_user_S.pem"
+openssl genpkey -algorithm ${user_algo_encrypt} > "${user_alias}/private/key_user_E.pem"
 
-openssl pkey -text -noout -in "$user_alias/private/key_user_S.pem" > "$user_alias/private/key_user_S.pem.txt"
-openssl pkey -text -noout -in "$user_alias/private/key_user_E.pem" > "$user_alias/private/key_user_E.pem.txt"
+openssl pkey -text -noout -in "${user_alias}/private/key_user_S.pem" > "${user_alias}/private/key_user_S.pem.txt"
+openssl pkey -text -noout -in "${user_alias}/private/key_user_E.pem" > "${user_alias}/private/key_user_E.pem.txt"
 
-openssl pkey -pubout -outform DER -in "$user_alias/private/key_user_S.pem" -out "$user_alias/private/key_user_pub_S.der"
-openssl pkey -pubout -outform DER -in "$user_alias/private/key_user_E.pem" -out "$user_alias/private/key_user_pub_E.der"
+openssl pkey -pubout -outform DER -in "${user_alias}/private/key_user_S.pem" -out "${user_alias}/private/key_user_pub_S.der"
+openssl pkey -pubout -outform DER -in "${user_alias}/private/key_user_E.pem" -out "${user_alias}/private/key_user_pub_E.der"
 
-user_S_PublicKey_shake256xof32=$(openssl dgst -shake256 "$user_alias/private/key_user_pub_S.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_E_PublicKey_shake256xof32=$(openssl dgst -shake256 "$user_alias/private/key_user_pub_E.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_S_PublicKey_shake256xof32=$(openssl dgst -shake256 "${user_alias}/private/key_user_pub_S.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_E_PublicKey_shake256xof32=$(openssl dgst -shake256 "${user_alias}/private/key_user_pub_E.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 # X25519 and X448 → -strparse 9
-openssl pkey -pubout -outform DER -in "$user_alias/private/key_user_E.pem" | openssl asn1parse -inform DER -noout -strparse 9 -out "$user_alias/private/key_user_E_BITSTRING.der"
-user_E_pub_strparse9=$(od -An -vtx1 "$user_alias/private/key_user_E_BITSTRING.der" | awk '{gsub(/[[:space:]]/,"");printf("%s",$0)}')
+openssl pkey -pubout -outform DER -in "${user_alias}/private/key_user_E.pem" | openssl asn1parse -inform DER -noout -strparse 9 -out "${user_alias}/private/key_user_E_BITSTRING.der"
+user_E_pub_strparse9=$(od -An -vtx1 "${user_alias}/private/key_user_E_BITSTRING.der" | awk '{gsub(/[[:space:]]/,"");printf("%s",$0)}')
 
 {
 	echo "Requested SKI, 256-bit SHAKE-256 over SPKI."
 	echo "-------------------------------------------"
 	echo "Signing key:"
-	echo "SKI: $user_S_PublicKey_shake256xof32"
+	echo "SKI: ${user_S_PublicKey_shake256xof32}"
 	echo "--"
 	echo "Encrypting key:"
-	echo "pub: $user_E_pub_strparse9"
-	echo "SKI: $user_E_PublicKey_shake256xof32"
-} > "$user_alias/private/subjectKeyIdentifier.txt"
+	echo "pub: ${user_E_pub_strparse9}"
+	echo "SKI: ${user_E_PublicKey_shake256xof32}"
+} > "${user_alias}/private/subjectKeyIdentifier.txt"
 
-cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
+cat <<- EOF > "${user_alias}/private/config_csr_user.cfg"
 ### BEGIN SMIME CSR USER EDWARDS x509v3_config
 
 	oid_section = new_oids
@@ -106,13 +106,13 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 [ smime_user_dn ]
 	# ↖ see: https://github.com/cabforum/smime/blob/main/SBR.md#71426-subject-dn-attributes-for-individual-validated-profile
 
-	commonName=$test_commonName
+	commonName=${test_commonName}
 
 	#givenName=
 	#surname=
 	#pseudonym=
 	#serialNumber=
-	#emailAddress=$test_email
+	#emailAddress=${test_email}
 	#title=
 	#streetAddress=
 	#localityName=
@@ -125,7 +125,7 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 
 [ subject_alt_name ]
 
-	email.0=$test_email
+	email.0=${test_email}
 	#email.1=
 	#email.2=
 	#otherName.0 =1.3.6.1.5.5.7.8.9;FORMAT:UTF8,UTF8String:
@@ -138,7 +138,7 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 	# CA may reject them
 
 	subjectAltName = @subject_alt_name
-	subjectKeyIdentifier = "$user_S_PublicKey_shake256xof32"
+	subjectKeyIdentifier = ${user_S_PublicKey_shake256xof32}
 	2.5.29.9=ASN1:SEQUENCE:custom_Request
 
 # https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.8
@@ -152,7 +152,7 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 
 
 [ signing_identifier ]
-	capabilityID = OID:$user_algo_sign
+	capabilityID = OID:${user_algo_sign}
 	parameter.0 = SEQUENCE:sequence_ski_sign
 
 [ sequence_ski_sign ]
@@ -160,11 +160,11 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 	parameter = SEQUENCE:sequence_shake256_sign
 [ sequence_shake256_sign ]
 	capabilityID = OID:2.16.840.1.101.3.4.2.12
-	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:$user_S_PublicKey_shake256xof32
+	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:${user_S_PublicKey_shake256xof32}
 
 
 [ encrypting_identifier ]
-	capabilityID = OID:$user_algo_encrypt
+	capabilityID = OID:${user_algo_encrypt}
 	parameter.0 = SEQUENCE:pubkeyinfo_encrypt
 	parameter.1 = SEQUENCE:sequence_ski_encrypt
 
@@ -178,25 +178,25 @@ cat <<- EOF > "$user_alias/private/config_csr_user.cfg"
 # openssl asn1parse -dump -strparse 208 -strparse 74 -noout -in csr_user.csr -out pub_key.der
 [ pubkeyinfo_encrypt ]
 	algorithm=SEQUENCE:algorithm_encrypt
-	pubkey=FORMAT:HEX,BITSTRING:$user_E_pub_strparse9
+	pubkey=FORMAT:HEX,BITSTRING:${user_E_pub_strparse9}
 [ algorithm_encrypt ]
-	algorithm=OID:$user_algo_encrypt
+	algorithm=OID:${user_algo_encrypt}
 
 [ sequence_ski_encrypt ]
 	capabilityID = OID:2.5.29.14
 	parameter = SEQUENCE:sequence_shake256_encrypt
 [ sequence_shake256_encrypt ]
 	capabilityID = OID:2.16.840.1.101.3.4.2.12
-	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:$user_E_PublicKey_shake256xof32
+	parameter = FORMAT:HEX,OCTWRAP,OCTETSTRING:${user_E_PublicKey_shake256xof32}
 
 
 ### END SMIME CSR USER EDWARDS x509v3_config
 EOF
 
-OPENSSL_CONF="$user_alias/private/config_csr_user.cfg"
+OPENSSL_CONF="${user_alias}/private/config_csr_user.cfg"
 
-openssl req -new -config "$user_alias/private/config_csr_user.cfg" -key "$user_alias/private/key_user_S.pem" > "$user_alias/csr_user.csr"
-openssl req -text -noout -verify -in "$user_alias/csr_user.csr" > "$user_alias/csr_user.csr.txt"
+openssl req -new -config "${OPENSSL_CONF}" -key "${user_alias}/private/key_user_S.pem" > "${user_alias}/csr_user.csr"
+openssl req -text -noout -verify -in "${user_alias}/csr_user.csr" > "${user_alias}/csr_user.csr.txt"
 
 echo "DONE."
 date --rfc-3339=seconds

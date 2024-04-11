@@ -45,7 +45,7 @@ default_md_crl="sha256"
 # for Ed25519/Ed448 irrelevant
 
 # "$dummy_crl_root" from "clean_RSA_single-key.sh"
-ca_serial_number="$(openssl x509 -noout -serial -in $ca_directory/cert_root.crt | awk -F '=' '{print $NF}')"
+ca_serial_number="$(openssl x509 -noout -serial -in "${ca_directory}/cert_root.crt" | awk -F '=' '{print $NF}')"
 
 
 
@@ -55,8 +55,8 @@ ca_serial_number="$(openssl x509 -noout -serial -in $ca_directory/cert_root.crt 
 # After revoking the FIRST certificate, comment the following lines   ↓↓↓  ↓↓↓
 ##########
 
-touch "$ca_directory/crl_index.txt"
-echo "010000" > "$ca_directory/crl_number.txt"
+touch "${ca_directory}/crl_index.txt"
+echo "010000" > "${ca_directory}/crl_number.txt"
 # hex "010000"
 # hex  010000→7FFFFF   max 8323072   (decimal 65536→8388607)
 # hex "0100"
@@ -64,7 +64,7 @@ echo "010000" > "$ca_directory/crl_number.txt"
 # hex "01"
 # hex  01→7F           max 127       (decimal 1→127)
 
-cat <<- EOF > "$ca_directory/config_ca_revocation.cfg"
+cat <<- EOF > "${ca_directory}/config_ca_revocation.cfg"
 ### BEGIN SMIME CA minimal CRL x509v3_config
 
 [ ca ]
@@ -73,15 +73,12 @@ cat <<- EOF > "$ca_directory/config_ca_revocation.cfg"
 
 [ root_revocation_list ]
 
-	database = ./$ca_directory/crl_index.txt
-	crlnumber = ./$ca_directory/crl_number.txt
-
-	certificate = ./$ca_directory/cert_root.crt
-	private_key = ./$ca_directory/key_root.pem
+	database = ./${ca_directory}/crl_index.txt
+	crlnumber = ./${ca_directory}/crl_number.txt
 
 	default_crl_days = 30
 	crl_extensions = CRL_extension
-	default_md = $default_md_crl
+	default_md = ${default_md_crl}
 
 [ CRL_extension ]
 
@@ -96,7 +93,7 @@ cat <<- EOF > "$ca_directory/config_ca_revocation.cfg"
 
 [ idp_section ]
 
-	fullname = URI:http://my1.ca/crl/$ca_serial_number.der.crl, URI:http://my2.ca/crl/$ca_serial_number.der.crl
+	fullname = URI:http://my1.ca/crl/${ca_serial_number}.der.crl, URI:http://my2.ca/crl/${ca_serial_number}.der.crl
 	#onlysomereasons = keyCompromise, CACompromise
 
 	#onlyuser = TRUE
@@ -107,9 +104,9 @@ cat <<- EOF > "$ca_directory/config_ca_revocation.cfg"
 ### END SMIME CA minimal CRL x509v3_config
 EOF
 
-OPENSSL_CONF="$ca_directory/config_ca_revocation.cfg"
+OPENSSL_CONF="${ca_directory}/config_ca_revocation.cfg"
 
-openssl ca -config "$OPENSSL_CONF" -gencrl -out "$ca_directory/$ca_serial_number.pem.crl"
+openssl ca -config "${OPENSSL_CONF}" -gencrl -cert "${ca_directory}/cert_root.crt" -keyfile "${ca_directory}/key_root.pem" -out "${ca_directory}/${ca_serial_number}.pem.crl"
 
 ##########
 # After revoking the FIRST certificate, comment the previous lines    ↑↑↑  ↑↑↑
@@ -118,19 +115,19 @@ openssl ca -config "$OPENSSL_CONF" -gencrl -out "$ca_directory/$ca_serial_number
 
 
 
-OPENSSL_CONF="$ca_directory/config_ca_revocation.cfg"
+OPENSSL_CONF="${ca_directory}/config_ca_revocation.cfg"
 
 # crl_reason :
 # unspecified/keyCompromise/CACompromise/affiliationChanged/superseded/
 # cessationOfOperation/certificateHold/removeFromCRL
-openssl ca -config "$OPENSSL_CONF" -crl_reason keyCompromise -revoke "$revoke_cert"
+openssl ca -config "${OPENSSL_CONF}" -cert "${ca_directory}/cert_root.crt" -keyfile "${ca_directory}/key_root.pem" -crl_reason keyCompromise -revoke "${revoke_cert}"
 
 # Refresh the Certificate Revocation List
-openssl ca -config "$OPENSSL_CONF" -gencrl -out "$ca_directory/$ca_serial_number.pem.crl"
+openssl ca -config "${OPENSSL_CONF}" -gencrl -cert "${ca_directory}/cert_root.crt" -keyfile "${ca_directory}/key_root.pem" -out "${ca_directory}/${ca_serial_number}.pem.crl"
 
-openssl crl -outform DER -in "$ca_directory/$ca_serial_number.pem.crl" -out "$ca_directory/$ca_serial_number.der.crl"
+openssl crl -outform DER -in "${ca_directory}/${ca_serial_number}.pem.crl" -out "${ca_directory}/${ca_serial_number}.der.crl"
 
-openssl crl -text -noout -in "$ca_directory/$ca_serial_number.pem.crl" > "$ca_directory/$ca_serial_number.pem.crl.txt"
+openssl crl -text -noout -in "${ca_directory}/${ca_serial_number}.pem.crl" > "${ca_directory}/${ca_serial_number}.pem.crl.txt"
 
 echo ""
 echo "DONE."
