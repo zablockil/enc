@@ -8,10 +8,10 @@ test_email="test@example.com"
 
 custom_days="$(($(($(date +%s -d "10 years") - $(date +%s)))/$((60*60*24))))"
 user_usage_period_days="1185"
-root_usage_period_days="$custom_days"
+root_usage_period_days="${custom_days}"
 
 user_alias="user"
-friendly_name_pkcs12="$test_commonName"
+friendly_name_pkcs12="${test_commonName}"
 
 # sha256/sha384/sha512
 default_md_root="sha256"
@@ -33,16 +33,16 @@ custom_serial () {
 #      or
 #        -set_serial "0x$(custom_serial)"
 
-mkdir "public_$user_alias"
+mkdir "public_${user_alias}"
 mkdir "private"
-mkdir "private/$user_alias"
+mkdir "private/${user_alias}"
 
 # ROOT/Issuer
 
 mkdir "private/root"
 openssl version -a > "private/root/openssl_version.txt"
 
-openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:$keygen_bits_root > "private/root/key_root.pem"
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:${keygen_bits_root} > "private/root/key_root.pem"
 
 root_PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "private/root/key_root.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
 
@@ -60,7 +60,7 @@ cat <<EOF
 
 [ smime_root_dn ]
 
-	commonName=💰 $test_commonName
+	commonName=💰 ${test_commonName}
 
 [ x509_smime_root_ext ]
 
@@ -71,7 +71,7 @@ cat <<EOF
 	#authorityKeyIdentifier = keyid:always
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = "$root_PublicKey_shake256xof32"
+	subjectKeyIdentifier = ${root_PublicKey_shake256xof32}
 	#nsComment = ""
 
 ### END SMIME standalone dual-key [RSA] ROOT x509v3_config
@@ -79,7 +79,7 @@ EOF
 }
 #echo "$(x509v3_config_root)"
 
-openssl req -new -x509 -days "$root_usage_period_days" -"$default_md_root" -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_root)") -key "private/root/key_root.pem" > "private/root/cert_root.crt"
+openssl req -new -x509 -days "${root_usage_period_days}" -"${default_md_root}" -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_root)") -key "private/root/key_root.pem" > "private/root/cert_root.crt"
 
 {
 	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/root/cert_root.crt"
@@ -88,11 +88,11 @@ openssl req -new -x509 -days "$root_usage_period_days" -"$default_md_root" -set_
 
 # USER/Subscriber
 
-openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:$keygen_bits_user_S > "private/$user_alias/key_user_S.pem"
-openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:$keygen_bits_user_E > "private/$user_alias/key_user_E.pem"
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:${keygen_bits_user_S} > "private/${user_alias}/key_user_S.pem"
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:${keygen_bits_user_E} > "private/${user_alias}/key_user_E.pem"
 
-user_S_PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "private/$user_alias/key_user_S.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
-user_E_PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "private/$user_alias/key_user_E.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+user_S_PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "private/${user_alias}/key_user_S.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+user_E_PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "private/${user_alias}/key_user_E.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
 
 read -r -d '' MAIN_x509_extensions <<-'EOF'
 	basicConstraints = critical,CA:FALSE
@@ -119,7 +119,7 @@ cat <<EOF
 
 [ subject_alt_name ]
 
-	email.0=$test_email
+	email.0=${test_email}
 	#email.1=
 	#otherName.0 =1.3.6.1.5.5.7.8.9;FORMAT:UTF8,UTF8String:
 	#otherName.1 =1.3.6.1.5.5.7.8.9;FORMAT:UTF8,UTF8String:
@@ -130,9 +130,9 @@ cat <<EOF
 	extendedKeyUsage = clientAuth,emailProtection
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = "$user_S_PublicKey_shake256xof32"
+	subjectKeyIdentifier = ${user_S_PublicKey_shake256xof32}
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
-$MAIN_x509_extensions
+${MAIN_x509_extensions}
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
 
 [ x509_smime_rsa_user_E_ext ]
@@ -141,9 +141,9 @@ $MAIN_x509_extensions
 	extendedKeyUsage = emailProtection
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = "$user_E_PublicKey_shake256xof32"
+	subjectKeyIdentifier = ${user_E_PublicKey_shake256xof32}
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
-$MAIN_x509_extensions
+${MAIN_x509_extensions}
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
 
 ### END SMIME standalone dual-key [RSA] USER x509v3_config
@@ -153,53 +153,53 @@ EOF
 
 csr_user_S () {
 cat <<EOF
-$(openssl req -new -config <(echo "$(x509v3_config_user)") -subj "/" -key "private/$user_alias/key_user_S.pem")
+$(openssl req -new -config <(echo "$(x509v3_config_user)") -subj "/" -key "private/${user_alias}/key_user_S.pem")
 EOF
 }
 #echo "$(csr_user_S)"
 
 csr_user_E () {
 cat <<EOF
-$(openssl req -new -config <(echo "$(x509v3_config_user)") -subj "/" -key "private/$user_alias/key_user_E.pem")
+$(openssl req -new -config <(echo "$(x509v3_config_user)") -subj "/" -key "private/${user_alias}/key_user_E.pem")
 EOF
 }
 #echo "$(csr_user_E)"
 
-openssl x509 -req -days "$user_usage_period_days" -"$default_md_user_S" -set_serial "0x$(custom_serial)" -in <(echo "$(csr_user_S)") -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile <(echo "$(x509v3_config_user)") -extensions x509_smime_rsa_user_S_ext > "private/$user_alias/cert_user_S.crt"
-openssl x509 -req -days "$user_usage_period_days" -"$default_md_user_E" -set_serial "0x$(custom_serial)" -in <(echo "$(csr_user_E)") -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile <(echo "$(x509v3_config_user)") -extensions x509_smime_rsa_user_E_ext > "private/$user_alias/cert_user_E.crt"
+openssl x509 -req -days "${user_usage_period_days}" -"${default_md_user_S}" -set_serial "0x$(custom_serial)" -in <(echo "$(csr_user_S)") -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile <(echo "$(x509v3_config_user)") -extensions x509_smime_rsa_user_S_ext > "private/${user_alias}/cert_user_S.crt"
+openssl x509 -req -days "${user_usage_period_days}" -"${default_md_user_E}" -set_serial "0x$(custom_serial)" -in <(echo "$(csr_user_E)") -CA "private/root/cert_root.crt" -CAkey "private/root/key_root.pem" -extfile <(echo "$(x509v3_config_user)") -extensions x509_smime_rsa_user_E_ext > "private/${user_alias}/cert_user_E.crt"
 
 {
-	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_S.crt"
-	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_S.crt"
-} | awk '{ sub(/[ \t]+$/, ""); print }' > "private/$user_alias/cert_user_S.crt.txt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/${user_alias}/cert_user_S.crt"
+	openssl x509 -noout -fingerprint -sha1 -in "private/${user_alias}/cert_user_S.crt"
+} | awk '{ sub(/[ \t]+$/, ""); print }' > "private/${user_alias}/cert_user_S.crt.txt"
 {
-	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/$user_alias/cert_user_E.crt"
-	openssl x509 -noout -fingerprint -sha1 -in "private/$user_alias/cert_user_E.crt"
-} | awk '{ sub(/[ \t]+$/, ""); print }' > "private/$user_alias/cert_user_E.crt.txt"
+	openssl x509 -purpose -text -noout -fingerprint -sha256 -in "private/${user_alias}/cert_user_E.crt"
+	openssl x509 -noout -fingerprint -sha1 -in "private/${user_alias}/cert_user_E.crt"
+} | awk '{ sub(/[ \t]+$/, ""); print }' > "private/${user_alias}/cert_user_E.crt.txt"
 
-openssl crl2pkcs7 -nocrl -certfile "private/root/cert_root.crt" -certfile "private/$user_alias/cert_user_S.crt" -certfile "private/$user_alias/cert_user_E.crt" > "public_$user_alias/credential_public.p7b"
+openssl crl2pkcs7 -nocrl -certfile "private/root/cert_root.crt" -certfile "private/${user_alias}/cert_user_S.crt" -certfile "private/${user_alias}/cert_user_E.crt" > "public_${user_alias}/credential_public.p7b"
 
-openssl x509 -in "private/root/cert_root.crt" > "public_$user_alias/root.crt"
-openssl x509 -in "private/$user_alias/cert_user_S.crt" > "public_$user_alias/user_S.crt"
-openssl x509 -in "private/$user_alias/cert_user_E.crt" > "public_$user_alias/user_E.crt"
+openssl x509 -in "private/root/cert_root.crt" > "public_${user_alias}/root.crt"
+openssl x509 -in "private/${user_alias}/cert_user_S.crt" > "public_${user_alias}/user_S.crt"
+openssl x509 -in "private/${user_alias}/cert_user_E.crt" > "public_${user_alias}/user_E.crt"
 
 {
-	openssl pkey -in "private/$user_alias/key_user_S.pem"
-	openssl x509 -in "private/$user_alias/cert_user_S.crt"
+	openssl pkey -in "private/${user_alias}/key_user_S.pem"
+	openssl x509 -in "private/${user_alias}/cert_user_S.crt"
 	openssl x509 -in "private/root/cert_root.crt"
-} > "private/$user_alias/credential_private_unencrypted_S.pem"
+} > "private/${user_alias}/credential_private_unencrypted_S.pem"
 
 {
-	openssl pkey -in "private/$user_alias/key_user_E.pem"
-	openssl x509 -in "private/$user_alias/cert_user_E.crt"
+	openssl pkey -in "private/${user_alias}/key_user_E.pem"
+	openssl x509 -in "private/${user_alias}/cert_user_E.crt"
 	openssl x509 -in "private/root/cert_root.crt"
-} > "private/$user_alias/credential_private_unencrypted_E.pem"
+} > "private/${user_alias}/credential_private_unencrypted_E.pem"
 
-openssl rand -base64 15 > "private/$user_alias/credential_private_password.txt"
+openssl rand -base64 15 > "private/${user_alias}/credential_private_password.txt"
 
-openssl pkcs12 -export -certpbe AES-256-CBC -keypbe AES-256-CBC -macalg sha256 -name "$friendly_name_pkcs12" -in "private/$user_alias/credential_private_unencrypted_S.pem" -out "private/$user_alias/credential_private_encrypted_S.p12" -passout file:"private/$user_alias/credential_private_password.txt"
+openssl pkcs12 -export -certpbe AES-256-CBC -keypbe AES-256-CBC -macalg sha256 -name "${friendly_name_pkcs12}" -in "private/${user_alias}/credential_private_unencrypted_S.pem" -out "private/${user_alias}/credential_private_encrypted_S.p12" -passout file:"private/${user_alias}/credential_private_password.txt"
 
-openssl pkcs12 -export -certpbe AES-256-CBC -keypbe AES-256-CBC -macalg sha256 -name "$friendly_name_pkcs12" -in "private/$user_alias/credential_private_unencrypted_E.pem" -out "private/$user_alias/credential_private_encrypted_E.p12" -passout file:"private/$user_alias/credential_private_password.txt"
+openssl pkcs12 -export -certpbe AES-256-CBC -keypbe AES-256-CBC -macalg sha256 -name "${friendly_name_pkcs12}" -in "private/${user_alias}/credential_private_unencrypted_E.pem" -out "private/${user_alias}/credential_private_encrypted_E.p12" -passout file:"private/${user_alias}/credential_private_password.txt"
 
 #
 # .   micro_standalone_RSA_dual-key.sh
