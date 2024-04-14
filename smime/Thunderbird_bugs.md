@@ -1,6 +1,7 @@
 ## Thunderbird bugzilla
 
 [MailNews Core](https://bugzilla.mozilla.org/describecomponents.cgi?product=MailNews%20Core)
+[Component: Security: S/MIME](https://bugzilla.mozilla.org/buglist.cgi?product=MailNews%20Core&component=Security%3A%20S%2FMIME&bug_status=__open__&limit=0)
 
 The scripts were used to test the functionality of this email program.
 
