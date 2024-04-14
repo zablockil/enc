@@ -23,7 +23,7 @@ two="$2"
 three="$3"
 four="$4"
 
-if [ "$one" -lt 0 ]; then
+if [ "${one}" -lt 0 ]; then
   echo ""
   echo "! ! !"
   echo "       [OFFSET_bytes] must be"
@@ -32,26 +32,26 @@ if [ "$one" -lt 0 ]; then
 exit 1
 fi
 
-if [ -s "$two" ]; then
-  size_two="$(stat -c%s "$two")"
+if [ -s "${two}" ]; then
+  size_two="$(stat -c%s "${two}")"
 else
   size_two="0"
 fi
 
-if [ -s "$three" ]; then
-  size_three="$(stat -c%s "$three")"
+if [ -s "${three}" ]; then
+  size_three="$(stat -c%s "${three}")"
 else
   size_three="0"
 fi
 
-if [ -s "$four" ]; then
-  size_four="$(stat -c%s "$four")"
+if [ -s "${four}" ]; then
+  size_four="$(stat -c%s "${four}")"
 else
   size_four="0"
 fi
 
 error_0_bytes () {
-cat <<EOF
+cat <<-"EOF"
 
 ! ! !
          files must be larger
@@ -60,17 +60,17 @@ cat <<EOF
 EOF
 }
 
-if [ "$size_two" -eq 0 ]; then
+if [ "${size_two}" -eq 0 ]; then
   error_0_bytes
   exit 1
 fi
 
-if [ -n "$three" ] && [ "$size_three" -eq 0 ]; then
+if [ -n "${three}" ] && [ "${size_three}" -eq 0 ]; then
   error_0_bytes
   exit 1
 fi
 
-if [ -n "$four" ] && [ "$size_four" -eq 0 ]; then
+if [ -n "${four}" ] && [ "${size_four}" -eq 0 ]; then
   error_0_bytes
   exit 1
 fi
@@ -79,7 +79,7 @@ max_offset_two="$((size_two - 1))"
 max_offset_three="$((size_three - 1))"
 max_offset_four="$((size_four - 1))"
 
-if [ "$one" -gt "$max_offset_two" ] || [ -n "$three" ] && [ "$one" -gt "$max_offset_three" ] || [ -n "$four" ] && [ "$one" -gt "$max_offset_four" ]; then
+if [ "${one}" -gt "${max_offset_two}" ] || [ -n "${three}" ] && [ "${one}" -gt "${max_offset_three}" ] || [ -n "${four}" ] && [ "${one}" -gt "${max_offset_four}" ]; then
   echo ""
   echo "! ! !"
   echo "      offset specified in the"
@@ -90,16 +90,16 @@ if [ "$one" -gt "$max_offset_two" ] || [ -n "$three" ] && [ "$one" -gt "$max_off
 fi
 
 basename_file_processed_func () {
-  basename "$file_processed"
+  basename "${file_processed}"
   }
 
-# max: -N 4, change $max_offset, "expand -t ..."
+# max: -N 4, change ${max_offset}, "expand -t ..."
 print_hex_offset_func () {
-  od -An -vtx1 -w4 -N 1 -j "$one" "$file_processed" | awk 'NR==1 {sub(/[[:blank:]]/,"");print $0}'
+  od -An -vtx1 -w4 -N 1 -j "${one}" "${file_processed}" | awk 'NR==1 {sub(/[[:blank:]]/,"");print $0}'
   }
 
 awk_hex2bin () {
-cat <<EOF
+cat <<-"EOF"
 BEGIN {
 FS=""
 a["f"]="1111"
@@ -120,7 +120,7 @@ a["1"]="0001"
 a["0"]="0000"
 }
 {
-for (i=1;i<=NF;i++) printf a[tolower(\$i)]" "
+for (i=1;i<=NF;i++) printf a[tolower($i)]" "
 print ""
 }
 EOF
@@ -128,28 +128,28 @@ EOF
 #echo "$(awk_hex2bin)"
 
 print_binary_func () {
-  echo "$print_hex_offset_var" | awk -f <(echo "$(awk_hex2bin)")
+  echo "${print_hex_offset_var}" | awk -f <(echo "$(awk_hex2bin)")
   }
 
 print_row_func () {
-  echo -e "$print_hex_offset_var\t$(print_binary_func)\t$(basename_file_processed_func)" | expand -t 11
+  echo -e "${print_hex_offset_var}\t$(print_binary_func)\t$(basename_file_processed_func)" | expand -t 11
   }
 
 # print header
-echo -e "\n\toffset\t$one\n\nhex\tbinary\tfilename\n---\t------\t--------" | expand -t 11
+echo -e "\n\toffset\t${one}\n\nhex\tbinary\tfilename\n---\t------\t--------" | expand -t 11
 
-file_processed="$two"
+file_processed="${two}"
 print_hex_offset_var="$(print_hex_offset_func)"
 print_row_func
 
-if [ -n "$three" ]; then
-  file_processed="$three"
+if [ -n "${three}" ]; then
+  file_processed="${three}"
   print_hex_offset_var="$(print_hex_offset_func)"
   print_row_func
 fi
 
-if [ -n "$four" ]; then
-  file_processed="$four"
+if [ -n "${four}" ]; then
+  file_processed="${four}"
   print_hex_offset_var="$(print_hex_offset_func)"
   print_row_func
 fi
