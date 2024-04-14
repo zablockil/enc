@@ -42,7 +42,7 @@ fi
 
 # test openssl version 3 (xoflen)
 test_message () {
-cat <<EOF
+cat <<-"EOF"
 Hello world!
 EOF
 }
@@ -53,14 +53,14 @@ if ! openssl dgst -shake256 -xoflen 1 -out /dev/null <(echo "$(test_message)"); 
   echo "      we need openssl version"
   echo "          at least 3 to work!"
   echo "                        . . ."
-  echo "                   you have : $old_openssl"
+  echo "                   you have : ${old_openssl}"
   echo "                        . . ."
   echo "                         bye!"
   echo "! ! !"
   exit 1
 fi
 
-if [ "$one" -lt 1 ]; then
+if [ "${one}" -lt 1 ]; then
   echo ""
   echo "! ! !"
   echo "     [bytes] must be positive"
@@ -73,7 +73,7 @@ disk_space_func () {
   df -PB 1 . | tail -1 | awk '{print $4}'
   }
 
-if [ "$(disk_space_func)" -lt "$one" ]; then
+if [ "$(disk_space_func)" -lt "${one}" ]; then
   echo ""
   echo "! ! !"
   echo "       not enough disk space!"
@@ -103,8 +103,8 @@ serial_alfanum5 () {
   echo "$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 5 ; echo '')"
   }
 
-openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:secp521r1 > "$three.pem"
-openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:secp521r1 > "$four.pem"
+openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:secp521r1 > "${three}.pem"
+openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:secp521r1 > "${four}.pem"
 
 x509v3_config_standaloneCertificate () {
 cat <<EOF
@@ -127,19 +127,19 @@ keyUsage = critical,digitalSignature,keyAgreement
 extendedKeyUsage = emailProtection
 #subjectKeyIdentifier = hash
 # ↖ standard rfc-sha1
-subjectKeyIdentifier = "$PublicKey_shake256xof32"
+subjectKeyIdentifier = ${PublicKey_shake256xof32}
 
 EOF
 }
 
-PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "$three.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
-openssl req -new -x509 -days "$custom_days" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "$three.pem" > "$three.crt"
+PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "${three}.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+openssl req -new -x509 -days "${custom_days}" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "${three}.pem" > "${three}.crt"
 
-PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "$four.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
-openssl req -new -x509 -days "$custom_days" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "$four.pem" > "$four.crt"
+PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "${four}.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+openssl req -new -x509 -days "${custom_days}" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "${four}.pem" > "${four}.crt"
 
-cat "$three.crt" >> "$three.pem"
-cat "$four.crt" >> "$four.pem"
+cat "${three}.crt" >> "${three}.pem"
+cat "${four}.crt" >> "${four}.pem"
 
 ##########
 #
@@ -179,17 +179,17 @@ make_garbage_0
 
 
 # variant one
-#openssl rand "$one" | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no8)" -iv "$(make_garbage_no6)" -out "$two.dat"
+#openssl rand "${one}" | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no8)" -iv "$(make_garbage_no6)" -out "${two}.dat"
 
 # variant two
-dd if=/dev/urandom bs="$one" count=1 | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no7)" -iv "$(make_garbage_no5)" -out "$two.dat"
+dd if=/dev/urandom bs="${one}" count=1 | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no7)" -iv "$(make_garbage_no5)" -out "${two}.dat"
 
-size_KeyStream="$(stat -c%s "$two.dat")"
-size_KeyStream_mib_approx="$(echo "$size_KeyStream" | numfmt --to=iec-i)"
+size_KeyStream="$(stat -c%s "${two}.dat")"
+size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i)"
 
 echo ""
 echo "# # #"
-echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx)"
+echo "   encryption key file size : ${size_KeyStream} (${size_KeyStream_mib_approx})"
 echo "                              [bytes]"
 echo "# # #"
 
