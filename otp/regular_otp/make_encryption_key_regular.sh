@@ -37,7 +37,7 @@ if [ ! -w "$(pwd)" ]; then
   exit 1
 fi
 
-if [ "$one" -lt 1 ]; then
+if [ "${one}" -lt 1 ]; then
   echo ""
   echo "! ! !"
   echo "     [bytes] must be positive"
@@ -50,7 +50,7 @@ disk_space_func () {
   df -PB 1 . | tail -1 | awk '{print $4}'
   }
 
-if [ "$(disk_space_func)" -lt "$one" ]; then
+if [ "$(disk_space_func)" -lt "${one}" ]; then
   echo ""
   echo "! ! !"
   echo "       not enough disk space!"
@@ -91,10 +91,10 @@ make_garbage_0
 
 
 # variant one
-#openssl rand "$one" | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no4)" -iv "$(make_garbage_no2)" -out "$two.dat"
+#openssl rand "${one}" | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no4)" -iv "$(make_garbage_no2)" -out "${two}.dat"
 
 # variant two
-dd if=/dev/urandom bs="$one" count=1 | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no3)" -iv "$(make_garbage_no1)" -out "$two.dat"
+dd if=/dev/urandom bs="${one}" count=1 | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no3)" -iv "$(make_garbage_no1)" -out "${two}.dat"
 
 echo ""
 echo "DONE."

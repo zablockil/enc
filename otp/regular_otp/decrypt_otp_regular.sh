@@ -24,13 +24,13 @@ two="$2"
 three="$(echo "$3" | awk '{printf "%.0f", $0}')"
 
 # test $1
-if [ -s "$one" ]; then
-  size_KeyStream="$(stat -c%s "$one")"
+if [ -s "${one}" ]; then
+  size_KeyStream="$(stat -c%s "${one}")"
 else
   size_KeyStream="0"
 fi
 
-if [ "$size_KeyStream" -lt 1 ]; then
+if [ "${size_KeyStream}" -lt 1 ]; then
   echo ""
   echo "! ! !"
   echo "                     Where is"
@@ -40,13 +40,13 @@ if [ "$size_KeyStream" -lt 1 ]; then
 fi
 
 # test $2
-if [ -s "$two" ]; then
-  size_Ciphertext="$(stat -c%s "$two")"
+if [ -s "${two}" ]; then
+  size_Ciphertext="$(stat -c%s "${two}")"
 else
   size_Ciphertext="0"
 fi
 
-if [ "$size_Ciphertext" -lt 1 ]; then
+if [ "${size_Ciphertext}" -lt 1 ]; then
   echo ""
   echo "! ! !"
   echo "                     Where is"
@@ -56,7 +56,7 @@ if [ "$size_Ciphertext" -lt 1 ]; then
 fi
 
 # test $3
-if [ "$three" -lt 0 ]; then
+if [ "${three}" -lt 0 ]; then
   echo ""
   echo "! ! !"
   echo "            [COUNTER] must be"
@@ -76,20 +76,20 @@ if [ ! -w "$(pwd)" ]; then
   exit 1
 fi
 
-basename_one="$(basename "$one")"
-basename_two="$(basename "$two")"
+basename_one="$(basename "${one}")"
+basename_two="$(basename "${two}")"
 
-size_KeyStream_mib_approx="$(echo "$size_KeyStream" | numfmt --to=iec-i)"
-size_Ciphertext_mib_approx="$(echo "$size_Ciphertext" | numfmt --to=iec-i)"
+size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i)"
+size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i)"
 
 echo ""
 echo "@ @ @"
-echo "    encryption key filename : $basename_one"
-echo "             input filename : $basename_two"
+echo "    encryption key filename : ${basename_one}"
+echo "             input filename : ${basename_two}"
 echo "                        . . ."
-echo "   encryption key file size : $size_KeyStream ($size_KeyStream_mib_approx)"
-echo "            OTP key pointer : $three"
-echo "            input file size : $size_Ciphertext ($size_Ciphertext_mib_approx)"
+echo "   encryption key file size : ${size_KeyStream} (${size_KeyStream_mib_approx})"
+echo "            OTP key pointer : ${three}"
+echo "            input file size : ${size_Ciphertext} (${size_Ciphertext_mib_approx})"
 echo "                              [bytes]"
 echo "              DECRYPTING FILE"
 echo "                        . . ."
@@ -99,7 +99,7 @@ disk_space_func () {
   }
 
 error_xor_func () {
-cat <<EOF
+cat <<-"EOF"
                         . . .
                  cant decrypt
                   cipher file
@@ -112,21 +112,21 @@ cat <<EOF
 EOF
 }
 
-if [ "$(disk_space_func)" -lt "$size_Ciphertext" ]; then
+if [ "$(disk_space_func)" -lt "${size_Ciphertext}" ]; then
   error_xor_func
   exit 1
 fi
 
-if ! (paste <(od -An -vtu1 -w1 -j 0 "$two") <(od -An -vtu1 -w1 -j "$three" "$one") | LC_ALL=C awk 'NF!=2{exit}; {printf "%c", xor($1, $2)}' > "$basename_two.decrypted"); then
+if ! (paste <(od -An -vtu1 -w1 -j 0 "${two}") <(od -An -vtu1 -w1 -j "${three}" "${one}") | LC_ALL=C awk 'NF!=2{exit}; {printf "%c", xor($1, $2)}' > "${basename_two}.decrypted"); then
   error_xor_func
   exit 1
 fi
 
-size_Plaintext="$(stat -c%s "$basename_two.decrypted")"
-size_Plaintext_mib_approx="$(echo "$size_Plaintext" | numfmt --to=iec-i)"
+size_Plaintext="$(stat -c%s "${basename_two}.decrypted")"
+size_Plaintext_mib_approx="$(echo "${size_Plaintext}" | numfmt --to=iec-i)"
 
 echo "                        . . ."
-echo "           output file size : $size_Plaintext ($size_Plaintext_mib_approx)"
+echo "           output file size : ${size_Plaintext} (${size_Plaintext_mib_approx})"
 echo "@ @ @"
 
 echo ""
