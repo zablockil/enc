@@ -59,6 +59,10 @@ again:
 | `encrypt_otp_regular.sh` | manual | absolute | 100% |
 | `encrypt_otp_gcm.sh` | automatic | absolute | 100% |
 
+### Windows10 msys2
+
+<img src="msys2_a_jakze.png?raw=true" alt="msys2" width="300" height="225"/>
+
 ### Author
 
 Leszek Zabłocki
