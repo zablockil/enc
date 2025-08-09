@@ -21,6 +21,9 @@ default_md_user="sha256"
 # 20  /  28  /  32  /  48  /  64
 rsa_pss_saltlen_root="32"
 rsa_pss_saltlen_user="32"
+# the maximum size of saltLength:
+# ((keySizeInBits - 1) / 8) - digestSizeInBytes - 2
+# ((4096 - 1) / 8) - 64 - 2 = 446
 
 # 2048/3072/4096
 keygen_bits_root="3072"
@@ -50,7 +53,7 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:${keygen_bits_root} > "p
 openssl pkey -text -noout -in "private/root/key_root.pem" > "private/root/key_root.pem.txt"
 openssl pkey -pubout -outform DER -in "private/root/key_root.pem" -out "private/root/key_root_pub.der"
 
-root_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+root_PublicKey_sha256=$(openssl dgst -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 root_PublicKey_sha256=$(openssl dgst -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 cat <<- EOF > "private/root/config_root.cfg"
@@ -84,7 +87,7 @@ cat <<- EOF > "private/root/config_root.cfg"
 	#authorityKeyIdentifier = keyid:always
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${root_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${root_PublicKey_sha256}
 	#subjectAltName =
 	#nameConstraints = critical,@name_constraints
 	#certificatePolicies = @polsect
@@ -128,7 +131,7 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:${keygen_bits_user} > "p
 openssl pkey -text -noout -in "private/${user_alias}/key_user.pem" > "private/${user_alias}/key_user.pem.txt"
 openssl pkey -pubout -outform DER -in "private/${user_alias}/key_user.pem" -out "private/${user_alias}/key_user_pub.der"
 
-user_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/${user_alias}/key_user_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 user_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 dummy_crl_root=$(openssl x509 -noout -serial -in "private/root/cert_root.crt" | awk -F '=' '{print $NF}')
@@ -181,7 +184,7 @@ cat <<- EOF > "private/${user_alias}/config_user.cfg"
 	authorityKeyIdentifier = keyid:always
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${user_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${user_PublicKey_sha256}
 	subjectAltName = @subject_alt_name
 	#subjectAltName = critical,@subject_alt_name
 		# ↖ NULL-DN cert
