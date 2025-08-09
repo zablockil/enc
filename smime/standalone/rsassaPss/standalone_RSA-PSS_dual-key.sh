@@ -21,6 +21,9 @@ default_md_user_E="sha256"
 rsa_pss_saltlen_root="32"
 rsa_pss_saltlen_user_S="32"
 rsa_pss_saltlen_user_E="32"
+# the maximum size of saltLength:
+# ((keySizeInBits - 1) / 8) - digestSizeInBytes - 2
+# ((4096 - 1) / 8) - 64 - 2 = 446
 
 # 2048/3072/4096
 keygen_bits_root="3072"
@@ -51,7 +54,7 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:${keygen_bits_root} > "p
 openssl pkey -text -noout -in "private/root/key_root.pem" > "private/root/key_root.pem.txt"
 openssl pkey -pubout -outform DER -in "private/root/key_root.pem" -out "private/root/key_root_pub.der"
 
-root_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+root_PublicKey_sha256=$(openssl dgst -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 cat <<- EOF > "private/root/config_root.cfg"
 ### BEGIN SMIME standalone dual-key [RSA-PSS] ROOT x509v3_config
@@ -77,7 +80,7 @@ cat <<- EOF > "private/root/config_root.cfg"
 	#authorityKeyIdentifier = keyid:always
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${root_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${root_PublicKey_sha256}
 	#nsComment = ""
 
 ### END SMIME standalone dual-key [RSA-PSS] ROOT x509v3_config
@@ -102,8 +105,8 @@ openssl pkey -text -noout -in "private/${user_alias}/key_user_E.pem" > "private/
 openssl pkey -pubout -outform DER -in "private/${user_alias}/key_user_S.pem" -out "private/${user_alias}/key_user_S_pub.der"
 openssl pkey -pubout -outform DER -in "private/${user_alias}/key_user_E.pem" -out "private/${user_alias}/key_user_E_pub.der"
 
-user_S_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/${user_alias}/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
-user_E_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/${user_alias}/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_S_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_E_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 read -r -d '' MAIN_x509_extensions <<-'EOF'
 	basicConstraints = critical,CA:FALSE
@@ -140,7 +143,7 @@ cat <<- EOF > "private/${user_alias}/config_user.cfg"
 	extendedKeyUsage = clientAuth,emailProtection
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${user_S_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${user_S_PublicKey_sha256}
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
 ${MAIN_x509_extensions}
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
@@ -151,7 +154,7 @@ ${MAIN_x509_extensions}
 	extendedKeyUsage = emailProtection
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${user_E_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${user_E_PublicKey_sha256}
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
 ${MAIN_x509_extensions}
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
