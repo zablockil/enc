@@ -48,7 +48,7 @@ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:${ec_paramgen_curve_roo
 openssl pkey -text -noout -in "private/root/key_root.pem" > "private/root/key_root.pem.txt"
 openssl pkey -pubout -outform DER -in "private/root/key_root.pem" -out "private/root/key_root_pub.der"
 
-root_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+root_PublicKey_sha256=$(openssl dgst -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 root_PublicKey_sha256=$(openssl dgst -sha256 "private/root/key_root_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 cat <<- EOF > "private/root/config_root.cfg"
@@ -82,7 +82,7 @@ cat <<- EOF > "private/root/config_root.cfg"
 	#authorityKeyIdentifier = keyid:always
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${root_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${root_PublicKey_sha256}
 	#subjectAltName =
 	#nameConstraints = critical,@name_constraints
 	#certificatePolicies = @polsect
@@ -131,10 +131,10 @@ openssl pkey -text -noout -in "private/${user_alias}/key_user_E.pem" > "private/
 openssl pkey -pubout -outform DER -in "private/${user_alias}/key_user_S.pem" -out "private/${user_alias}/key_user_S_pub.der"
 openssl pkey -pubout -outform DER -in "private/${user_alias}/key_user_E.pem" -out "private/${user_alias}/key_user_E_pub.der"
 
-user_S_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/${user_alias}/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_S_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 user_S_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_S_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
-user_E_PublicKey_shake256xof32=$(openssl dgst -shake256 "private/${user_alias}/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
+user_E_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 user_E_PublicKey_sha256=$(openssl dgst -sha256 "private/${user_alias}/key_user_E_pub.der" | awk -F '=[[:blank:]]' '{print $NF}')
 
 dummy_crl_root=$(openssl x509 -noout -serial -in "private/root/cert_root.crt" | awk -F '=' '{print $NF}')
@@ -196,7 +196,7 @@ cat <<- EOF > "private/${user_alias}/config_user.cfg"
 	#extendedKeyUsage = anyExtendedKeyUsage
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${user_S_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${user_S_PublicKey_sha256}
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
 ${MAIN_x509_extensions}
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
@@ -209,7 +209,7 @@ ${MAIN_x509_extensions}
 	#extendedKeyUsage = anyExtendedKeyUsage
 	#subjectKeyIdentifier = hash
 		# ↖ standard rfc-sha1
-	subjectKeyIdentifier = ${user_E_PublicKey_shake256xof32}
+	subjectKeyIdentifier = ${user_E_PublicKey_sha256}
 #################################### ↓ TEMPLATE "MAIN_x509_extensions" ↓
 ${MAIN_x509_extensions}
 #################################### ↑ TEMPLATE "MAIN_x509_extensions" ↑
