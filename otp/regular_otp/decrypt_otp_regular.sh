@@ -79,8 +79,8 @@ fi
 basename_one="$(basename "${one}")"
 basename_two="$(basename "${two}")"
 
-size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i)"
-size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i)"
+size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i --suffix=B)"
+size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i --suffix=B)"
 
 echo ""
 echo "@ @ @"
@@ -123,7 +123,7 @@ if ! (paste <(od -An -vtu1 -w1 -j 0 "${two}") <(od -An -vtu1 -w1 -j "${three}" "
 fi
 
 size_Plaintext="$(stat -c%s "${basename_two}.decrypted")"
-size_Plaintext_mib_approx="$(echo "${size_Plaintext}" | numfmt --to=iec-i)"
+size_Plaintext_mib_approx="$(echo "${size_Plaintext}" | numfmt --to=iec-i --suffix=B)"
 
 echo "                        . . ."
 echo "           output file size : ${size_Plaintext} (${size_Plaintext_mib_approx})"

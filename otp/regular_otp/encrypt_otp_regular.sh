@@ -78,8 +78,8 @@ fi
 basename_one="$(basename "${one}")"
 basename_two="$(basename "${two}")"
 
-size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i)"
-size_Plaintext_mib_approx="$(echo "${size_Plaintext}" | numfmt --to=iec-i)"
+size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i --suffix=B)"
+size_Plaintext_mib_approx="$(echo "${size_Plaintext}" | numfmt --to=iec-i --suffix=B)"
 
 echo ""
 echo "@ @ @"
@@ -122,7 +122,7 @@ if ! (paste <(od -An -vtu1 -w1 -j 0 "${two}") <(od -An -vtu1 -w1 -j "${three}" "
 fi
 
 size_Ciphertext="$(stat -c%s "${basename_two}.dat")"
-size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i)"
+size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i --suffix=B)"
 
 if [ "${size_Ciphertext}" -ne "${size_Plaintext}" ]; then
   echo "                        . . ."
@@ -136,7 +136,7 @@ fi
 count_var="$((three + size_Ciphertext))"
 
 KeyStream_free_space="$((size_KeyStream - count_var))"
-KeyStream_free_space_mib_approx="$(echo "${KeyStream_free_space}" | numfmt --to=iec-i)"
+KeyStream_free_space_mib_approx="$(echo "${KeyStream_free_space}" | numfmt --to=iec-i --suffix=B)"
 
 echo "                        . . ."
 echo "    cipher output file size : ${size_Ciphertext} (${size_Ciphertext_mib_approx})"
