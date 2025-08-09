@@ -132,10 +132,10 @@ subjectKeyIdentifier = ${PublicKey_shake256xof32}
 EOF
 }
 
-PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "${three}.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "${three}.pem" | openssl dgst -shake256 -xoflen 32 | awk -F '=[[:blank:]]' '{print $NF}')"
 openssl req -new -x509 -days "${custom_days}" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "${three}.pem" > "${three}.crt"
 
-PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "${four}.pem" | openssl dgst -shake256 | awk -F '=[[:blank:]]' '{print $NF}')"
+PublicKey_shake256xof32="$(openssl pkey -pubout -outform DER -in "${four}.pem" | openssl dgst -shake256 -xoflen 32 | awk -F '=[[:blank:]]' '{print $NF}')"
 openssl req -new -x509 -days "${custom_days}" -sha512 -set_serial "0x$(custom_serial)" -config <(echo "$(x509v3_config_standaloneCertificate)") -key "${four}.pem" > "${four}.crt"
 
 cat "${three}.crt" >> "${three}.pem"
@@ -185,7 +185,7 @@ make_garbage_0
 dd if=/dev/urandom bs="${one}" count=1 | openssl enc -aes-256-ctr -p -v -nosalt -K "$(make_garbage_no7)" -iv "$(make_garbage_no5)" -out "${two}.dat"
 
 size_KeyStream="$(stat -c%s "${two}.dat")"
-size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i)"
+size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i --suffix=B)"
 
 echo ""
 echo "# # #"

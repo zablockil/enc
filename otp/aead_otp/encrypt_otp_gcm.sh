@@ -185,14 +185,14 @@ if [ "${count_var}" -lt 0 ]; then
   exit 1
 fi
 
-size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i)"
-size_Plaintext_mib_approx="$(echo "${size_Plaintext}" | numfmt --to=iec-i)"
+size_KeyStream_mib_approx="$(echo "${size_KeyStream}" | numfmt --to=iec-i --suffix=B)"
+size_Plaintext_mib_approx="$(echo "${size_Plaintext}" | numfmt --to=iec-i --suffix=B)"
 
 sum_counter_and_Plaintext="$((count_var + size_Plaintext))"
 
 if [ "${sum_counter_and_Plaintext}" -gt "${size_KeyStream}" ]; then
   KeyStream_missing_space="$((sum_counter_and_Plaintext - size_KeyStream))"
-  KeyStream_missing_space_mib_approx="$(echo "${KeyStream_missing_space}" | numfmt --to=iec-i)"
+  KeyStream_missing_space_mib_approx="$(echo "${KeyStream_missing_space}" | numfmt --to=iec-i --suffix=B)"
   echo ""
   echo "! ! !"
   echo "      not enough space on OTP"
@@ -220,7 +220,7 @@ fi
 
 if [ "${max_detected_counter_from_log}" -gt 0 ] && [ "${max_detected_counter_from_log}" -gt "${count_var}" ]; then
   KeyStream_reused_space="$((max_detected_counter_from_log - count_var))"
-  KeyStream_reused_space_mib_approx="$(echo "${KeyStream_reused_space}" | numfmt --to=iec-i)"
+  KeyStream_reused_space_mib_approx="$(echo "${KeyStream_reused_space}" | numfmt --to=iec-i --suffix=B)"
   echo "${COL_RED2}"
   echo "-----------------------------"
   echo "------- W A R N I N G -------"
@@ -303,7 +303,7 @@ if ! (paste <(od -An -vtu1 -w1 -j 0 "${two}") <(od -An -vtu1 -w1 -j "${count_var
 fi
 
 size_Ciphertext="$(stat -c%s "${tmp_dir}/${basename_two_clean}.dat")"
-size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i)"
+size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i --suffix=B)"
 
 if [ "${size_Ciphertext}" -ne "${size_Plaintext}" ]; then
   echo "                        . . ."
@@ -330,7 +330,7 @@ echo "${size_Ciphertext}" >> "${filename_counter}"
 count_var="$(count_func)"
 
 KeyStream_free_space="$((size_KeyStream - count_var))"
-KeyStream_free_space_mib_approx="$(echo "${KeyStream_free_space}" | numfmt --to=iec-i)"
+KeyStream_free_space_mib_approx="$(echo "${KeyStream_free_space}" | numfmt --to=iec-i --suffix=B)"
 
 echo "                        . . ."
 echo "    cipher output file size : ${size_Ciphertext} (${size_Ciphertext_mib_approx})"
@@ -355,7 +355,7 @@ echo "      ENCRYPTING FILE AES-GCM"
 echo "      you use cert with SKI : ${certificate_first_16_subjectKeyIdentifier}..."
 echo "                        . . ."
 
-Ciphertext_shake256xof32_dgst="$(openssl dgst -shake256 "${tmp_dir}/${basename_two_clean}.dat" | awk -F '=[[:blank:]]' '{print $NF}')"
+Ciphertext_shake256xof32_dgst="$(openssl dgst -shake256 -xoflen 32 "${tmp_dir}/${basename_two_clean}.dat" | awk -F '=[[:blank:]]' '{print $NF}')"
 
 # internal counter in .tar, + dgst
 internal_counter_tar="$((count_var - size_Ciphertext))"
@@ -433,7 +433,7 @@ if [ "${cleaning_up_temporary_files}" -eq 1 ]; then
 fi
 
 size_Ciphertext_Aead="$(stat -c%s "${dir_ENCRYPTED}/${filename_output}.der")"
-size_Ciphertext_Aead_mib_approx="$(echo "${size_Ciphertext_Aead}" | numfmt --to=iec-i)"
+size_Ciphertext_Aead_mib_approx="$(echo "${size_Ciphertext_Aead}" | numfmt --to=iec-i --suffix=B)"
 
 Ciphertext_Aead_sha256_dgst="$(openssl dgst -sha256 "${dir_ENCRYPTED}/${filename_output}.der" | awk -F '=[[:blank:]]' '{print $NF}')"
 echo "${Ciphertext_Aead_sha256_dgst} *${filename_output}.der" > "${dir_ENCRYPTED}/${filename_output}.der.sha256"

@@ -165,7 +165,7 @@ echo "         for a key with SKI : ${certificate_first_16_subjectKeyIdentifier}
 echo "                        . . ."
 
 size_Ciphertext_Aead="$(stat -c%s "${two}")"
-size_Ciphertext_Aead_mib_approx="$(echo "${size_Ciphertext_Aead}" | numfmt --to=iec-i)"
+size_Ciphertext_Aead_mib_approx="$(echo "${size_Ciphertext_Aead}" | numfmt --to=iec-i --suffix=B)"
 
 echo "             input filename : ${basename_two}"
 echo "            input file size : ${size_Ciphertext_Aead} (${size_Ciphertext_Aead_mib_approx})"
@@ -243,7 +243,7 @@ tar_Ciphertext_filename="$(awk 'NR==1 {print $6}' "${tar_list_files}")"
 tar_Plaintext_filename="$(awk 'NR==1 {print substr($6,1,length($6)-4)}' "${tar_list_files}")"
 tar_Ciphertext_shake256xof32_dgst="$(awk 'NR==2 {print substr($6,1,length($6)-9)}' "${tar_list_files}")"
 
-Ciphertext_shake256xof32_dgst="$(openssl dgst -shake256 "${tmp_dir}/${tar_Ciphertext_filename}" | awk -F '=[[:blank:]]' '{print $NF}')"
+Ciphertext_shake256xof32_dgst="$(openssl dgst -shake256 -xoflen 32 "${tmp_dir}/${tar_Ciphertext_filename}" | awk -F '=[[:blank:]]' '{print $NF}')"
 
 echo "                        . . ."
 echo "            secret filename : ${tar_Plaintext_filename}"
@@ -308,7 +308,7 @@ fi
 
 if [ "${max_detected_counter_from_log}" -gt 0 ] && [ "${max_detected_counter_from_log}" -gt "${count_sender_var}" ]; then
   KeyStream_reused_space="$((max_detected_counter_from_log - count_sender_var))"
-  KeyStream_reused_space_mib_approx="$(echo "${KeyStream_reused_space}" | numfmt --to=iec-i)"
+  KeyStream_reused_space_mib_approx="$(echo "${KeyStream_reused_space}" | numfmt --to=iec-i --suffix=B)"
   echo "${COL_RED2}"
   echo "-----------------------------"
   echo "------- W A R N I N G -------"
@@ -338,7 +338,7 @@ if [ "${max_detected_counter_from_log}" -gt 0 ] && [ "${max_detected_counter_fro
 fi
 
 size_Ciphertext="$(stat -c%s "${tmp_dir}/${tar_Ciphertext_filename}")"
-size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i)"
+size_Ciphertext_mib_approx="$(echo "${size_Ciphertext}" | numfmt --to=iec-i --suffix=B)"
 
 echo ""
 echo "${COL_BLUE}@ @ @${COL_NORM}"
