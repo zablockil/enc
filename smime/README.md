@@ -90,6 +90,7 @@ The script was based on the findings of the *CA/Browser Forum* and [document](ht
 
 * OpenSSL 1.1.1l 24 Aug 2021 / GNU bash 5.1.12 / date (GNU coreutils) 9.0 / GNU Awk 5.1.1
 * OpenSSL 3.0.7  1 Nov 2022 / GNU bash 5.2 / date (GNU coreutils) 9.1 / GNU Awk 5.1.0
+* OpenSSL 3.5.1 1 Jul 2025 / GNU bash 5.2.37 / date (GNU coreutils) 8.32 / GNU Awk 5.3.2
 
 [guiDumpASN-ng binary for Windows](https://web.archive.org/web/20160828215604/http://geminisecurity.com/wp-content/uploads/tools/GDA-ng-setup.exe)
 
