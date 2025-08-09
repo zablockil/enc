@@ -47,7 +47,7 @@
 			<tr><td rowspan="4">X509v3 extensions</td><td>Basic Constraints</td><td>CA:TRUE</td><td>critical</td></tr>
 			<tr><td>Key Usage</td><td>keyCertSign, cRLSign</td><td>critical</td></tr>
 			<tr><td>Extended Key Usage</td><td>clientAuth, emailProtection</td><td></td></tr>
-			<tr><td>Subject Key Identifier</td><td>256-bit SHAKE-256 hash of the DER encoding of the subjectPublicKey (pin-shake256-hex)</td><td></td></tr>
+			<tr><td>Subject Key Identifier</td><td>SHA-256 hash of the DER encoding of the subjectPublicKey (pin-sha256-hex)</td><td></td></tr>
 		</table>
 
 		<h3>1. subkey, Sign [S]</h3>
@@ -66,7 +66,7 @@
 			<tr><td>Key Usage</td><td>digitalSignature</td><td>critical</td></tr>
 			<tr><td>Extended Key Usage</td><td>clientAuth, emailProtection</td><td></td></tr>
 			<tr><td>Authority Key Identifier</td><td>keyID: based on the subject key identifier in the issuer's certificate</td><td></td></tr>
-			<tr><td>Subject Key Identifier</td><td>256-bit SHAKE-256 hash of the DER encoding of the subjectPublicKey (pin-shake256-hex)</td><td></td></tr>
+			<tr><td>Subject Key Identifier</td><td>SHA-256 hash of the DER encoding of the subjectPublicKey (pin-sha256-hex)</td><td></td></tr>
 			<tr><td>Subject Alternative Name</td><td>IA5String (rfc822Name) or/and UTF-8 (otherName)<br><b>test@example.com</b></td><td>critical</td></tr>
 		</table>
 
@@ -86,7 +86,7 @@
 			<tr><td>Key Usage</td><td>keyAgreement</td><td>critical</td></tr>
 			<tr><td>Extended Key Usage</td><td>emailProtection</td><td></td></tr>
 			<tr><td>Authority Key Identifier</td><td>keyID: based on the subject key identifier in the issuer's certificate</td><td></td></tr>
-			<tr><td>Subject Key Identifier</td><td>256-bit SHAKE-256 hash of the DER encoding of the subjectPublicKey (pin-shake256-hex)</td><td></td></tr>
+			<tr><td>Subject Key Identifier</td><td>SHA-256 hash of the DER encoding of the subjectPublicKey (pin-sha256-hex)</td><td></td></tr>
 			<tr><td>Subject Alternative Name</td><td>IA5String (rfc822Name) or/and UTF-8 (otherName)<br><b>test@example.com</b></td><td>critical</td></tr>
 		</table>
 
